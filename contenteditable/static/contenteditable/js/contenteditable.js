@@ -3,10 +3,11 @@
 /*global $, console */
 $(function(){
   "use strict";
-  // function enableEditbox
-  // turns design mode on for editable elements
+
+  // Turns design mode on for editable elements
+  //
   // this: the box element that contains all the editable elements
-  function enableEditbox(){
+  var enableEditbox = function() {
     var self = this,
         $box = $(self),
         data = $box.data();
@@ -14,12 +15,12 @@ $(function(){
     var editables = $box.find('[data-editfield]:not(.locked)');
     if (editables.length){
       editables
-      .attr('contenteditable', 'true')
-      .off('.editbox');
+        .attr('contenteditable', 'true')
+        .off('.editbox');
     } else if (data.editfield) {
       $box
-      .attr('contenteditable', 'true')
-      .off('.editbox');
+        .attr('contenteditable', 'true')
+        .off('.editbox');
     } else {
       throw "nothingToEdit";
     }
@@ -35,22 +36,23 @@ $(function(){
         $(document).off('.editbox');
       }
     });
-  }
+  };
 
 
-  // function disableEditbox
   // turns design mode off for editable elements
+  //
   // this: the box element that contains all the editable elements
-  function disableEditbox(){
+  var disableEditbox = function() {
     $(this).removeClass('ui-editbox-active')
-    .find('[contentEditable]')
-    .removeAttr('contenteditable');
-  }
+      .find('[contentEditable]')
+      .removeAttr('contenteditable');
+  };
 
 
-  // function saveEditbox
+  // save contents of element back
+  //
   // this: the box element that contains all the editable elements
-  function saveEditbox(){
+  var saveEditbox = function() {
     var $box = $(this),
         data = $box.data(),
         pk = data.editpk,
@@ -89,10 +91,10 @@ $(function(){
       });
     }
     disableEditbox.call(this);
-  }
+  };
 
   $('.clearonclick').click(function() {
-    if ($(this).html()==$(this).attr('data-placeholder')) {
+    if ($(this).html() == $(this).attr('data-placeholder')) {
       $(this).html('');
     }
   }).blur(function () {
