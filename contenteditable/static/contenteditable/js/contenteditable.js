@@ -110,15 +110,6 @@ $(function(){
   // not an efficient selector but makes this easier to implement in the templates
   $('[data-editpk], [data-editslug]').addClass('ui-editbox').on('dblclick', enableEditbox);
 
-  $('.returnsaves').each(function (_, el) {
-    $(el).keypress(function(event) {
-      var keycode = (event.keyCode ? event.keyCode : event.which);
-      if (keycode=='13') {
-        $(el).blur();
-        return false;
-      }
-    });
-  });
 
   $('.editableitem').each(function (_, el) {
     $(el).attr('contenteditable', 'true');
