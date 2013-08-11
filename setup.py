@@ -17,7 +17,7 @@ setup(
     license = "GPL",
     keywords = "django contenteditable",
     url = "https://github.com/lusentis/django-contenteditable",
-    packages=['contenteditable','sample'],
+    packages=['contenteditable','example_project'],
     long_description="Django support for HTML contenteditable", #read('README.md'),
     classifiers=[
         "Development Status :: 5 - Production/Stable",

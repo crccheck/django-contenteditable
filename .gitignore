@@ -4,8 +4,8 @@
 bin/*
 build/*
 dist/
-sample/*.sqlite
-sample/contenteditable
+example_project/*.sqlite
+
 
 # editors
 *.swp
