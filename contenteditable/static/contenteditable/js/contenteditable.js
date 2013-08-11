@@ -1,6 +1,8 @@
 // Content editable support
 
+/*global $, console */
 $(function(){
+  "use strict";
   // function enableEditbox
   // turns design mode on for editable elements
   // this: the box element that contains all the editable elements
