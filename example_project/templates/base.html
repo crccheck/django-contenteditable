@@ -1,0 +1,46 @@
+{% load url from future %}<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Django-Contenteditable Demo</title>
+  <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0-rc1/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}contenteditable/css/contenteditable.css" />
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}contenteditable/js/contenteditable.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="navbar navbar-inverse">
+      {% if user.is_authenticated %}
+        <p class="navbar-text pull-right">
+          Welcome, {{ user }}.
+          <a class="navbar-btn" href="{% url 'logout' %}">Logout</a>
+        </p>
+      {% else %}
+        <p class="navbar-text pull-right">
+          Not signed in.
+          <a class="navbar-btn" href="{% url 'login' %}">Login</a>
+        </p>
+    {% endif %}
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="page-header">
+      <h1>Django-contenteditable Demo</h1>
+    </div>
+    <div id="main" role="main">
+      {% block main %}{% endblock %}
+    </div>
+  </div>
+
+  <div class="container">
+    <footer class="panel" style="margin-top: 4em;">
+      See docs at <a href="https://github.com/lusentis/django-contenteditable">GitHub</a>
+    </footer>
+  </div>
+</body>
+</html>
+

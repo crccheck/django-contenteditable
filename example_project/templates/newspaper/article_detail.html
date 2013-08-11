@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load url from future %}
+{% load editable editablebox editableattr from inlineedit %}
+
+{% block main %}
+  <ul class="breadcrumb">
+    <li><a href="{% url 'article_list' %}">Back to list</a></li>
+    <li class="active">{{ article }}</li>
+  </ul>
+  <article {% editablebox article %}>
+    {% editable article.title "h3" %}
+    <p {% editableattr "text" "Insert article text here..." %}>
+      {{ article.text|safe }}
+    </p>
+  </article>
+{% endblock %}

@@ -1,0 +1,4 @@
+include setup.py README.* MANIFEST.in LICENSE
+recursive-include contenteditable *.html
+recursive-include example_project *.html
+global-exclude *.pyc

@@ -1,4 +1,4 @@
-# Django settings for sample project.
+# Django settings for example project.
 import os
 
 import dj_database_url
@@ -18,7 +18,7 @@ ADMINS = (
 MANAGERS = ADMINS
 
 DATABASES = {'default': dj_database_url.config(default='sqlite:///' +
-    project_dir('sample.sqlite'))}
+    project_dir('example_project.sqlite'))}
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -72,7 +72,7 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    project_dir('static'),
+    # project_dir('static'),
 )
 
 # List of finder classes that know how to find static files in
@@ -102,7 +102,7 @@ MIDDLEWARE_CLASSES = (
     # 'django_pdb.middleware.PdbMiddleware',
 )
 
-ROOT_URLCONF = 'sample.urls'
+ROOT_URLCONF = 'example_project.urls'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -119,10 +119,13 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'contenteditable',
-    'contenteditable_test',
+
+    # sample
     'newspaper',
+
+    # support
+    'contenteditable_test',
     'chunks',
-    'django_pdb',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -133,9 +136,15 @@ INSTALLED_APPS = (
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
     'handlers': {
         'mail_admins': {
             'level': 'ERROR',
+            'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
         }
     },
