@@ -1,14 +1,20 @@
 {% extends "base.html" %}
-{% block content %}
 {% load url from future %}
-{% load inlineedit %}
+{% load editable editablebox editableattr from inlineedit %}
 
-<p><a href="{% url "article_list" %}">Back to list</a></p>
-<p>Here is the article with pk={{ article.pk }}. Double-click to start editing. Try editing title or text and then refresh the page.</p>
+{% block content %}
+  <p><a href="{% url 'article_list' %}">Back to list</a></p>
+  <p>
 
-<article style="background-color:#eee;" {% editablebox article %}>
-	{% editable article.title "h3" %}
-	<p {% editableattr "text" "Insert article text here..." %}>{{ article.text|safe }}</p>
-</article>
+    Here is the article with pk={{ article.pk }}. Double-click to start editing.
+    Try editing title or text and then refresh the page.
 
+  </p>
+
+  <article style="background-color:#eee;" {% editablebox article %}>
+    {% editable article.title "h3" %}
+    <p {% editableattr "text" "Insert article text here..." %}>
+      {{ article.text|safe }}
+    </p>
+  </article>
 {% endblock %}
