@@ -1,6 +1,9 @@
-Django>=1.4
+# temporarily disabled to support tox
+# Django>=1.4
+
 django-chunks==0.1
 dj-database-url==0.2.1
+tox==1.5.0
 
 # heroku
 psycopg2==2.4.5

@@ -6,6 +6,8 @@ build/*
 dist/
 example_project/*.sqlite
 
+# testing
+.tox
 
 # editors
 *.swp
