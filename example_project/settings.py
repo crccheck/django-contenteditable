@@ -126,7 +126,6 @@ INSTALLED_APPS = (
     # support
     'contenteditable_test',
     'chunks',
-    'django_pdb',
 )
 
 # A sample logging configuration. The only tangible logging
