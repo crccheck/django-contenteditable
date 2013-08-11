@@ -11,13 +11,22 @@
   <script type="text/javascript" src="{{ STATIC_URL }}contenteditable/js/contenteditable.js"></script>
 </head>
 <body>
+  <div class="container">
+    <div class="navbar navbar-inverse">
+    {% if user.is_authenticated %}
+      <p class="navbar-text pull-right">
+        Welcome, {{ user }}.
+        <a class="navbar-btn" href="{% url 'logout' %}">Logout</a>
+      </p>
+    {% else %}
+      <p class="navbar-text pull-right">
+        Not signed in.
+        <a class="navbar-btn" href="{% url 'login' %}">Login</a>
+      </p>
+    {% endif %}
+    </div>
+  </div>
 <div class="container">
-  {% if user.is_authenticated %}
-    {{ user }}
-    <a href="{% url 'logout' %}">logout</a>
-  {% else %}
-    <a href="{% url 'login' %}">login</a>
-  {% endif %}
   <header>
     <h1>Django-contenteditable Demo</h1>
   </header>
