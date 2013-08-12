@@ -3,7 +3,7 @@
     "pk": 1,
     "model": "newspaper.article",
     "fields": {
-      "text": "this ise text<br>",
+      "text": "<p>this ise text</p>",
       "title": "This is the title"
     }
   },
@@ -11,7 +11,7 @@
     "pk": 2,
     "model": "newspaper.article",
     "fields": {
-      "text": "This is the new text<br>",
+      "text": "<p>This is the new text</p>",
       "title": "Article titlssssesdfgsdfgsfg"
     }
   },
