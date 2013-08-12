@@ -41,121 +41,133 @@ $(document).ajaxSend(function(event, xhr, settings) {
 });
 
 
+var Editable = function(el) {
+  this.init(el);
+};
+
+// Init
+Editable.prototype.init = function(el) {
+  this.el = el;
+  this.$el = $(el);
+  var data = this.$el.data();
+  var $editables = this.$el.find('[data-editfield]:not(.locked)');
+  if ($editables.length){
+    this.$editables = $editables;
+  } else if (data.editfield) {
+    this.$editables = this.$el;
+  } else {
+    throw "nothingToEdit";
+  }
+  this.$el.addClass('ui-editbox-active');
+  this.storeState();
+  this.start();
+};
+
+// Start
+//
+// change DOM and setup handlers
+Editable.prototype.start = function() {
+  var self = this;
+  this.$editables
+    .attr('contenteditable', 'true')
+    .off('.editbox')  // clear any existing handlers just in case
+    .on('keydown.editbox', function(e) {
+      self.keyHandler.call(self, e);
+    });
+  // FIXME remove hack once we get real ui for determining when we're done
+  $(document).on('click.editbox', function(evt){
+    if (!$(evt.target).closest('.ui-editbox-active').length) {
+      try {
+        self.save.call(self, evt);
+      } catch (e){
+        self.disable.call(self);
+        console.warn(e);
+      }
+      $(document).off('.editbox');
+    }
+  });
+};
+
+// Store the state of the $editables
+Editable.prototype.storeState = function() {
+  // TODO
+};
+
+// Handler for keypresses while editing
+Editable.prototype.keyHandler = function(evt) {
+  switch (evt.which) {
+    case 13:  // ENTER
+      // this.save.call(this, evt);
+      // // or
+      // evt.preventDefault();
+      // document.execCommand('insertParagraph', false, null);
+    break;
+    case 27:  // ESC
+      this.save.call(this, evt);
+    break;
+  }
+};
+
+// Save contents of element back
+Editable.prototype.save = function() {
+  var $box = this.$el,
+      data = $box.data(),
+      pk = data.editpk,
+      save_data = {};
+  if (!data.editmodel){
+    throw "missingModel";
+  }
+  if (pk){
+    save_data.pk = pk;
+  } else if (data.editslug) {
+    save_data.slug = data.editslug;
+    if (data.editslugfield){
+      save_data.slugfield = data.editslugfield;
+    }
+  } else {
+    throw "missingPK";
+  }
+  var editables = $box.find('[data-editfield]');
+  if (editables.length) {
+    editables.each(function (_, el) {
+      var name = $(el).attr('data-editfield');
+      if (name) {
+        save_data[name] = el.innerHTML;
+      }
+    });
+  } else if (data.editfield) {
+    save_data[data.editfield] = $.trim($box.html());
+  } else {
+    throw "missingData";
+  }
+  if (pk !== -1) {
+    $contentEditable.save(data.editmodel, save_data);
+  } else {
+    $contentEditable.insert(data.editmodel, save_data, function(data) {
+      $box.attr('data-editpk', data.pk);
+    });
+  }
+  this.disable();
+};
+
+// Turns design mode off
+Editable.prototype.disable = function() {
+  this.$el.removeClass('ui-editbox-active')
+    .find('[contentEditable]')
+    .removeAttr('contenteditable')
+    .off('.editbox');  // XXX
+};
+
+
 /*global $, confirm, console */
 $(function(){
   "use strict";
-
-  // handler for keypresses while editing
-  //
-  // this: the box element that contains all the editable elements
-  var keyHandler = function(evt) {
-    console.log(evt.which);
-    switch (evt.which) {
-      case 13:  // ENTER
-        // saveEditbox.call(this, evt);
-        // // or
-        // evt.preventDefault();
-        // document.execCommand('insertParagraph', false, null);
-      break;
-      case 27:  // ESC
-        saveEditbox.call(this, evt);
-      break;
-    }
-    return true;
-  };
-
 
   // Turns design mode on for editable elements
   //
   // this: the box element that contains all the editable elements
   var enableEditbox = function() {
-    var self = this,
-        $box = $(self),
-        data = $box.data();
-    $box.addClass('ui-editbox-active');
-    var $editables = $box.find('[data-editfield]:not(.locked)');
-    if ($editables.length){
-      // continue
-    } else if (data.editfield) {
-      $editables = $box;
-    } else {
-      throw "nothingToEdit";
-    }
-    $editables
-      .attr('contenteditable', 'true')
-      .off('.editbox')  // clear any existing handlers just in case
-      .on('keydown.editbox', function(e) {
-        keyHandler.call(self, e);
-      });
-    // FIXME remove hack once we get real ui for determining when we're done
-    $(document).on('click.editbox', function(evt){
-      if (!$(evt.target).closest('.ui-editbox-active').length) {
-        try {
-          saveEditbox.call(self, evt);
-        } catch (e){
-          disableEditbox.call(self);
-          console.warn(e);
-        }
-        $(document).off('.editbox');
-      }
-    });
-  };
-
-
-  // save contents of element back
-  //
-  // this: the box element that contains all the editable elements
-  var saveEditbox = function() {
-    var $box = $(this),
-        data = $box.data(),
-        pk = data.editpk,
-        save_data = {};
-    if (!data.editmodel){
-      throw "missingModel";
-    }
-    if (pk){
-      save_data.pk = pk;
-    } else if (data.editslug) {
-      save_data.slug = data.editslug;
-      if (data.editslugfield){
-        save_data.slugfield = data.editslugfield;
-      }
-    } else {
-      throw "missingPK";
-    }
-    var editables = $box.find('[data-editfield]');
-    if (editables.length) {
-      editables.each(function (_, el) {
-        var name = $(el).attr('data-editfield');
-        if (name) {
-          save_data[name] = el.innerHTML;
-        }
-      });
-    } else if (data.editfield) {
-      save_data[data.editfield] = $.trim($box.html());
-    } else {
-      throw "missingData";
-    }
-    if (pk !== -1) {
-      $contentEditable.save(data.editmodel, save_data);
-    } else {
-      $contentEditable.insert(data.editmodel, save_data, function(data) {
-        $box.attr('data-editpk', data.pk);
-      });
-    }
-    disableEditbox.call(this);
-  };
-
-
-  // turns design mode off for editable elements
-  //
-  // this: the box element that contains all the editable elements
-  var disableEditbox = function() {
-    var $this = $(this);
-    $this.removeClass('ui-editbox-active')
-      .find('[contentEditable]')
-      .removeAttr('contenteditable');
-    $this.off('.editbox');  // XXX
+    new Editable(this);
   };
 
 
@@ -177,6 +189,7 @@ $(function(){
   $('[data-editpk], [data-editslug]').addClass('ui-editbox').on('dblclick', enableEditbox);
 
 
+  // DELETEME
   $('.editableitem').each(function (_, el) {
     $(el).attr('contenteditable', 'true');
     $(el).css({'border':'1px dotted red'});
@@ -184,9 +197,11 @@ $(function(){
   });
 
   $('.clickitem').each(function (_, el) {
+  // DELETEME
     $.setEventHandler('click', el, function() { reloadPage(); });
   });
 
+  // DELETEME
   $('.reloadbutton').each(function (_, el) {
     $(el).click(function() {
       reloadPage();
@@ -194,6 +209,7 @@ $(function(){
     });
   });
 
+  // XXX
   $('.deletebutton').each(function (_, el) {
     $(el).click(function() {
       if (confirm('Vuoi veramente eliminare questo elemento?')) {
@@ -204,7 +220,7 @@ $(function(){
   });
 });
 
-
+// DELETEME
 $.setEventHandler = function(ev, el, callback) {
   $(el).bind(ev, function() {
       save_data = {};
@@ -271,6 +287,7 @@ var $contentEditable = {
       alert("Si è verificato un errore durante il salvataggio. Le modifiche potrebbero non essere state salvate.\nSe il problema persiste ricarica la pagina.");
     });
   },
+  // XXX TODO send DELETE request
   'delete': function(model, id) {
     console.log("Deleting <"+model+">#"+id);
     $.post($contentEditable.options['deleteurl'], {
@@ -288,6 +305,7 @@ var $contentEditable = {
 };
 
 
+// DELETEME
 var reloadPage = function(url) {
   if (url) {
     document.location.href=url;
