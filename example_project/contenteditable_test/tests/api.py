@@ -19,12 +19,10 @@ class BaseTestCase(TestCase):
         self.url = reverse('dce_endpoint')
         self.base_data = {'model': 'article', 'pk': '1'}
 
-    def generate(self, updates=None):
+    def generate(self, **updates):
         """
         Create the data that would be recieved in a JSON request.
         """
-        if updates is None:
-            return self.base_data.copy()
         return dict(self.base_data, **updates)
 
 
@@ -58,10 +56,22 @@ class HTTPMethods(LoggedInTestCase):
 
 
 class CRUDTest(LoggedInTestCase):
+    def test_can_create_instance(self):
+        new_title = 'Inserted with PUT'
+        data = self.generate(title=new_title)
+        data.pop('pk')
+        request = self.factory.put(self.url, data)
+        request.user = self.user
+        request.PUT = data  # FIXME this is wrong
+        view = UpdateView.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        Article.objects.get(title=new_title)
+
     def test_can_update_field(self):
         new_title = "Poopity Poop Pooh"
         request = self.factory.post(self.url,
-           self.generate({'title': new_title})
+           self.generate(title=new_title)
         )
         request.user = self.user
         view = UpdateView.as_view()
@@ -86,7 +96,7 @@ class Settings(LoggedInTestCase):
         old_title = self.obj.title
         new_title = old_title + " sucks"
         response = self.client.post(self.url,
-                   self.generate({'title': new_title}))
+                   self.generate(title=new_title))
         self.assertEqual(response.status_code, 404)
         obj = Article.objects.get(pk=1)
         self.assertEqual(obj.title, old_title)

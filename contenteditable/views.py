@@ -1,6 +1,6 @@
 import json
 
-from django.http import Http404, HttpResponse, HttpResponseForbidden
+from django.http import Http404, HttpResponse, HttpResponseForbidden, QueryDict
 from django.db import models
 from django.views.decorators.http import require_POST
 from django.views.generic import View
@@ -69,8 +69,9 @@ class UpdateView(View, SingleObjectMixin):
         if (not settings.CONTENTEDITABLE_ENABLED):
             # pretend that we don't exist
             raise Http404
-        # TODO test this
-        data = request.POST.dict().copy()
+        # hacked in just for the test case. don't know what a real PUT request
+        # looks like yet
+        data = request.PUT.copy()
         model, editable_fields = self.get_editable_model_and_fields(data)
         obj_data = {}
         if 'slugfield' in data:
@@ -85,7 +86,6 @@ class UpdateView(View, SingleObjectMixin):
         return HttpResponse(
             json.dumps(dict(message='ok', pk=obj.pk)),
             content_type='application/json')
-        pass
 
 
 @require_POST
