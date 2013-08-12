@@ -114,7 +114,7 @@ TEMPLATE_DIRS = (
     project_dir('templates/'),
 )
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -127,9 +127,8 @@ INSTALLED_APPS = (
     'newspaper',
 
     # support
-    'contenteditable_test',
     'chunks',
-)
+]
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
@@ -169,3 +168,18 @@ CONTENTEDITABLE_MODELS = (
     ('newspaper.article', ('title', 'text')),
     ('chunks.chunk', ('content',)),
 )
+
+
+if DEBUG:
+    TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+
+    # extra apps used for development
+    INSTALLED_APPS += [
+        'django_nose',
+        'contenteditable_test',
+    ]
+
+try:
+    from local_settings import *
+except ImportError:
+    pass
