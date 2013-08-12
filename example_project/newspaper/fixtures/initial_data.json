@@ -3,23 +3,23 @@
   "pk": 1, 
   "model": "newspaper.article", 
   "fields": {
-    "text": "<p>this ise text</p>", 
-    "title": "This is the title"
+    "text": "\n      <p>April is the cruellest month, breeding</p><p>Lilacs out of the dead land, mixing</p><p>Memory and desire, stirring</p><p>Dull roots with spring rain.</p><p>Winter kept us warm, covering</p><p>Earth in forgetful snow, feeding</p><p>A little life with dried tubers.</p><p>Summer surprised us, coming over the Starnbergersee</p><p>With a shower of rain; we stopped in the colonnade,</p><p>And went on in sunlight, into the Hofgarten,</p><p>And drank coffee, and talked for an hour.</p><p>Bin gar keine Russin, stamm\u2019 aus Litauen, echt deutsch.</p><p>And when we were children, staying at the archduke\u2019s,</p><p>My cousin\u2019s, he took me out on a sled,</p><p>And I was frightened. He said, Marie,</p><p>Marie, hold on tight. And down we went.</p><p>In the mountains, there you feel free.</p><p>I read, much of the night, and go south in the winter.</p><div><br></div>\n    ", 
+    "title": "The Django Admin Sucks"
   }
 },
 {
   "pk": 2, 
   "model": "newspaper.article", 
   "fields": {
-    "text": "<p>This is the new text</p>", 
-    "title": "Article titlssssesdfgsdfgsfg"
+    "text": "\n      \n      <p>Beware the Jabberwock, my son!</p><p>&nbsp; The jaws that bite, the claws that catch!</p><p>Beware the Jubjub bird, and shun</p><p>&nbsp; The frumious Bandersnatch!\"</p><p>He took his vorpal sword in hand:</p><p>&nbsp; Long time the manxome foe he sought --</p><p>So rested he by the Tumtum tree,</p><p>&nbsp; And stood awhile in thought.</p><p>And, as in uffish thought he stood,</p><p>&nbsp; The Jabberwock, with eyes of flame,</p><p>Came whiffling through the tulgey wood,</p><p>&nbsp; And burbled as it came!</p><p>One, two! One, two! And through and through</p><p>&nbsp; The vorpal blade went snicker-snack!</p><p>He left it dead, and with its head</p><p>&nbsp; He went galumphing back.</p><p>\"And, has thou slain the Jabberwock?</p><p>&nbsp; Come to my arms, my beamish boy!</p><p>O frabjous day! Callooh! Callay!'</p><p>&nbsp; He chortled in his joy.</p><p>`Twas brillig, and the slithy toves</p><p>&nbsp; Did gyre and gimble in the wabe;</p><p>All mimsy were the borogoves,</p><p>&nbsp; And the mome raths outgrabe.</p><div><br></div>\n    \n    ", 
+    "title": "The Django Admin is Great"
   }
 },
 {
   "pk": 1, 
   "model": "chunks.chunk", 
   "fields": {
-    "content": "<p>Welcome to the Django-ContentEditable Demo.</p><p>BTW, This block of text is a chunk! Try and edit me!</p>", 
+    "content": "<p>Welcome to the Django-Contenteditable demo site. Before you can edit anything, you'll need to log in (the link is in the upper left). The default login is admin/admin. If you don't log in, I hope you can read Italian.</p><p>If a piece of text is editable, you can double-click on it to initiate editing. To save, click outside the box in the gray area.</p><p>By the way, this block of text is an editable chunk. Go ahead and edit me!</p>", 
     "key": "intro"
   }
 }
