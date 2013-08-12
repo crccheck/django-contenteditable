@@ -15,7 +15,7 @@ clean:
 
 # run test suite
 test:
-	$(DJ) test contenteditable_test
+	$(DJ) test
 
 
 # reset an existing db

@@ -2,7 +2,6 @@ Django>=1.5.1
 
 django-chunks==0.1
 dj-database-url==0.2.2
-tox==1.5.0
 
 # heroku
 psycopg2==2.5.1
