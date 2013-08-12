@@ -51,6 +51,12 @@ $(function(){
   var keyHandler = function(evt) {
     console.log(evt.which);
     switch (evt.which) {
+      case 13:  // ENTER
+        // saveEditbox.call(this, evt);
+        // // or
+        // evt.preventDefault();
+        // document.execCommand('insertParagraph', false, null);
+      break;
       case 27:  // ESC
         saveEditbox.call(this, evt);
       break;
