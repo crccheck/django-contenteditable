@@ -1,6 +1,6 @@
 import json
 
-from django.http import Http404, HttpResponse, HttpResponseForbidden, QueryDict
+from django.http import Http404, HttpResponse, HttpResponseForbidden
 from django.db import models
 from django.views.decorators.http import require_POST
 from django.views.generic import View
@@ -38,10 +38,19 @@ class UpdateView(View, SingleObjectMixin):
             raise NoPermission
         return model, editable_fields
 
-    def post(self, request, *args, **kwargs):
-        if (not settings.CONTENTEDITABLE_ENABLED):
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Raise 404 if app is disabled.
+
+        This probably isn't the best way to do this. Should probably just not
+        get put into the urlconf.
+        """
+        if not settings.CONTENTEDITABLE_ENABLED:
             # pretend that we don't exist
             raise Http404
+        return super(UpdateView, self).dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
         data = request.POST.dict().copy()
         try:
             self.model, editable_fields = self.get_editable_model_and_fields(data)
@@ -66,9 +75,6 @@ class UpdateView(View, SingleObjectMixin):
         #         content_type='application/json')
 
     def put(self, request, *args, **kwargs):
-        if (not settings.CONTENTEDITABLE_ENABLED):
-            # pretend that we don't exist
-            raise Http404
         # hacked in just for the test case. don't know what a real PUT request
         # looks like yet
         data = request.PUT.copy()

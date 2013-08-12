@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.http import Http404
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.test.utils import override_settings
@@ -93,13 +94,11 @@ class Permissions(BaseTestCase):
 class Settings(LoggedInTestCase):
     @override_settings(CONTENTEDITABLE_ENABLED=False)
     def test_api_is_off_when_disabled(self):
-        old_title = self.obj.title
-        new_title = old_title + " sucks"
-        response = self.client.post(self.url,
-                   self.generate(title=new_title))
-        self.assertEqual(response.status_code, 404)
-        obj = Article.objects.get(pk=1)
-        self.assertEqual(obj.title, old_title)
+        view = UpdateView.as_view()
+        request = self.factory.post(self.url, self.generate())
+        request.user = self.user
+        with self.assertRaises(Http404):
+            view(request)
 
     @override_settings(CONTENTEDITABLE_ENABLED=False)
     def test_tags_do_nothing_when_disabled(self):
