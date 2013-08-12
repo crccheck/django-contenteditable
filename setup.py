@@ -19,6 +19,7 @@ setup(
     keywords="django contenteditable",
     url="https://github.com/lusentis/django-contenteditable",
     packages=['contenteditable', 'example_project'],
+    include_package_data=True,
     long_description="Django support for HTML contenteditable",  # read('README.md'),
     classifiers=[
         "Development Status :: 5 - Production/Stable",
