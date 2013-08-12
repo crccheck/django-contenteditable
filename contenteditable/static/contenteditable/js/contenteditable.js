@@ -186,60 +186,10 @@ $(function(){
   });
 
   // not an efficient selector but makes this easier to implement in the templates
-  $('[data-editpk], [data-editslug]').addClass('ui-editbox').on('dblclick', enableEditbox);
-
-
-  // DELETEME
-  $('.editableitem').each(function (_, el) {
-    $(el).attr('contenteditable', 'true');
-    $(el).css({'border':'1px dotted red'});
-    $.setEventHandler('blur', el, function() { reloadPage($(el).attr('data-redirect')); });
-  });
-
-  $('.clickitem').each(function (_, el) {
-  // DELETEME
-    $.setEventHandler('click', el, function() { reloadPage(); });
-  });
-
-  // DELETEME
-  $('.reloadbutton').each(function (_, el) {
-    $(el).click(function() {
-      reloadPage();
-      return false;
-    });
-  });
-
-  // XXX
-  $('.deletebutton').each(function (_, el) {
-    $(el).click(function() {
-      if (confirm('Vuoi veramente eliminare questo elemento?')) {
-        $contentEditable['delete']($(el).attr('data-model'), $(el).attr('data-id'));
-      }
-      return false;
-    });
-  });
+  $('[data-editpk], [data-editslug]')
+    .addClass('ui-editbox')
+    .on('dblclick', enableEditbox);
 });
-
-// DELETEME
-$.setEventHandler = function(ev, el, callback) {
-  $(el).bind(ev, function() {
-      save_data = {};
-      if ($(this).attr('data-value') !== undefined) {
-        console.log('Saving with data-value: '+$(this).attr('data-value'));
-        save_data[$(this).attr('data-name')] = $(this).attr('data-value');
-      } else {
-        console.log('Saving with innerHTML: '+$(this).html());
-        save_data[$(this).attr('data-name')] = $(this).html();
-      }
-
-      if (save_data[$(this).attr('data-name')]!=$(this).attr('data-placeholder')) {
-        $contentEditable.save($(this).attr('data-model'), $(this).attr('data-id'), save_data, callback);
-      } else {
-        console.log('Aborted: not saving an empty album');
-      }
-      return false;
-  });
-};
 
 
 var $contentEditable = {
@@ -301,15 +251,5 @@ var $contentEditable = {
     .error(function() {
       alert("Impossibile eliminare l'elemento richiesto. La pagina verrà ricaricata.");
     });
-  }
-};
-
-
-// DELETEME
-var reloadPage = function(url) {
-  if (url) {
-    document.location.href=url;
-  } else {
-    document.location.reload();
   }
 };
