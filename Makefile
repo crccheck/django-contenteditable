@@ -21,7 +21,13 @@ test:
 # reset an existing db
 resetdb:
 	$(DJ) sqlclear newspaper | $(DJ) dbshell
+	$(DJ) sqlclear chunks | $(DJ) dbshell
 	$(DJ) syncdb
 
 
-.PHONY: clean test resetdb
+# regenerate fixture based on current database
+dumpdata:
+	$(DJ) dumpdata newspaper chunks --indent=2 > $(PROJECT)/newspaper/fixtures/initial_data.json
+
+
+.PHONY: clean test resetdb dumpdata
