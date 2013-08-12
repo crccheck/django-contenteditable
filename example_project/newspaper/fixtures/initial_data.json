@@ -1,26 +1,26 @@
 [
-  {
-    "pk": 1,
-    "model": "newspaper.article",
-    "fields": {
-      "text": "<p>this ise text</p>",
-      "title": "This is the title"
-    }
-  },
-  {
-    "pk": 2,
-    "model": "newspaper.article",
-    "fields": {
-      "text": "<p>This is the new text</p>",
-      "title": "Article titlssssesdfgsdfgsfg"
-    }
-  },
-  {
-    "pk": 1,
-    "model": "chunks.chunk",
-    "fields": {
-      "content": "Welcome, I am a Chunk!",
-      "key": "intro"
-    }
+{
+  "pk": 1, 
+  "model": "newspaper.article", 
+  "fields": {
+    "text": "<p>this ise text</p>", 
+    "title": "This is the title"
   }
+},
+{
+  "pk": 2, 
+  "model": "newspaper.article", 
+  "fields": {
+    "text": "<p>This is the new text</p>", 
+    "title": "Article titlssssesdfgsdfgsfg"
+  }
+},
+{
+  "pk": 1, 
+  "model": "chunks.chunk", 
+  "fields": {
+    "content": "<p>Welcome to the Django-ContentEditable Demo.</p><p>BTW, This block of text is a chunk! Try and edit me!</p>", 
+    "key": "intro"
+  }
+}
 ]
