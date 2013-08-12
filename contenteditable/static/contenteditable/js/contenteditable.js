@@ -50,6 +50,11 @@ $(function(){
   // this: the box element that contains all the editable elements
   var keyHandler = function(evt) {
     console.log(evt.which);
+    switch (evt.which) {
+      case 27:  // ESC
+        saveEditbox.call(this, evt);
+      break;
+    }
     return true;
   };
 
@@ -72,10 +77,10 @@ $(function(){
     }
     $editables
       .attr('contenteditable', 'true')
-      .on('keydown', function(e) {
+      .off('.editbox')  // clear any existing handlers just in case
+      .on('keydown.editbox', function(e) {
         keyHandler.call(self, e);
-      })
-      .off('.editbox');
+      });
     // FIXME remove hack once we get real ui for determining when we're done
     $(document).on('click.editbox', function(evt){
       if (!$(evt.target).closest('.ui-editbox-active').length) {
@@ -140,9 +145,11 @@ $(function(){
   //
   // this: the box element that contains all the editable elements
   var disableEditbox = function() {
-    $(this).removeClass('ui-editbox-active')
+    var $this = $(this);
+    $this.removeClass('ui-editbox-active')
       .find('[contentEditable]')
       .removeAttr('contenteditable');
+    $this.off('.editbox');  // XXX
   };
 
 
