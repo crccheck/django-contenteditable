@@ -8,7 +8,7 @@ from django.utils import unittest
 
 from newspaper.models import Article
 
-from contenteditable.views import UpdateView
+from contenteditable.views import ContentEditableView
 
 
 class BaseTestCase(TestCase):
@@ -58,13 +58,14 @@ class HTTPMethods(LoggedInTestCase):
 
 class CRUDTest(LoggedInTestCase):
     def test_can_create_instance(self):
+        # TODO finish writing me
         new_title = 'Inserted with PUT'
         data = self.generate(title=new_title)
         data.pop('pk')
         request = self.factory.put(self.url, data)
         request.user = self.user
         request.PUT = data  # FIXME this is wrong
-        view = UpdateView.as_view()
+        view = ContentEditableView.as_view()
         response = view(request)
         self.assertEqual(response.status_code, 200)
         Article.objects.get(title=new_title)
@@ -75,11 +76,23 @@ class CRUDTest(LoggedInTestCase):
            self.generate(title=new_title)
         )
         request.user = self.user
-        view = UpdateView.as_view()
+        view = ContentEditableView.as_view()
         response = view(request)
         self.assertEqual(response.status_code, 200)
         obj = Article.objects.get(pk=1)
         self.assertEqual(obj.title, new_title)
+
+    def test_can_delete_field(self):
+        # TODO finish writing me
+        data = self.generate()
+        request = self.factory.delete(self.url, data)
+        request.user = self.user
+        request.DELETE = data  # FIXME this is wrong
+        view = ContentEditableView.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        with self.assertRaises(Article.DoesNotExist):
+            Article.objects.get(pk=data['pk'])
 
 
 class Permissions(BaseTestCase):
@@ -94,7 +107,7 @@ class Permissions(BaseTestCase):
 class Settings(LoggedInTestCase):
     @override_settings(CONTENTEDITABLE_ENABLED=False)
     def test_api_is_off_when_disabled(self):
-        view = UpdateView.as_view()
+        view = ContentEditableView.as_view()
         request = self.factory.post(self.url, self.generate())
         request.user = self.user
         with self.assertRaises(Http404):
