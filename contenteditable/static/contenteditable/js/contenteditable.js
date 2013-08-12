@@ -45,6 +45,15 @@ $(document).ajaxSend(function(event, xhr, settings) {
 $(function(){
   "use strict";
 
+  // handler for keypresses while editing
+  //
+  // this: the box element that contains all the editable elements
+  var keyHandler = function(evt) {
+    console.log(evt.which);
+    return true;
+  };
+
+
   // Turns design mode on for editable elements
   //
   // this: the box element that contains all the editable elements
@@ -53,18 +62,20 @@ $(function(){
         $box = $(self),
         data = $box.data();
     $box.addClass('ui-editbox-active');
-    var editables = $box.find('[data-editfield]:not(.locked)');
-    if (editables.length){
-      editables
-        .attr('contenteditable', 'true')
-        .off('.editbox');
+    var $editables = $box.find('[data-editfield]:not(.locked)');
+    if ($editables.length){
+      // continue
     } else if (data.editfield) {
-      $box
-        .attr('contenteditable', 'true')
-        .off('.editbox');
+      $editables = $box;
     } else {
       throw "nothingToEdit";
     }
+    $editables
+      .attr('contenteditable', 'true')
+      .on('keydown', function(e) {
+        keyHandler.call(self, e);
+      })
+      .off('.editbox');
     // FIXME remove hack once we get real ui for determining when we're done
     $(document).on('click.editbox', function(evt){
       if (!$(evt.target).closest('.ui-editbox-active').length) {
