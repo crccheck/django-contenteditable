@@ -1,5 +1,4 @@
-# temporarily disabled to support tox
-# Django>=1.4
+Django>=1.5.1
 
 django-chunks==0.1
 dj-database-url==0.2.2
