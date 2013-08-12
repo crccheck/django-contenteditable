@@ -1,6 +1,8 @@
 PROJECT=./example_project
+DJ=python $(PROJECT)/manage.py
 
 
+# delete generated files
 clean:
 	find -name "*.pyc" -delete
 	find . -name ".DS_Store" -delete
@@ -11,8 +13,15 @@ clean:
 	rm -rf *.egg-info
 
 
+# run test suite
 test:
-	python $(PROJECT)/manage.py test contenteditable_test
+	$(DJ) test contenteditable_test
 
 
-.PHONY: clean test
+# reset an existing db
+resetdb:
+	$(DJ) sqlclear newspaper | $(DJ) dbshell
+	$(DJ) syncdb
+
+
+.PHONY: clean test resetdb
