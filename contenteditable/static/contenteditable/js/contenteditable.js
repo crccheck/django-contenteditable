@@ -1,6 +1,47 @@
 // Content editable support
 
-/*global $, console */
+
+// add csrf to ajax requests
+// https://docs.djangoproject.com/en/1.3/ref/contrib/csrf/#upgrading-notesO
+$(document).ajaxSend(function(event, xhr, settings) {
+  function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      var cookies = document.cookie.split(';');
+      for (var i = 0; i < cookies.length; i++) {
+        var cookie = jQuery.trim(cookies[i]);
+        // Does this cookie string begin with the name we want?
+        if (cookie.substring(0, name.length + 1) == (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+  function sameOrigin(url) {
+    // url could be relative or scheme relative or absolute
+    var host = document.location.host; // host + port
+    var protocol = document.location.protocol;
+    var sr_origin = '//' + host;
+    var origin = protocol + sr_origin;
+    // Allow absolute or scheme relative URLs to same origin
+    return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+        (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+        // or any other URL that isn't scheme relative or absolute i.e relative.
+        !(/^(\/\/|http:|https:).*/.test(url));
+  }
+  function safeMethod(method) {
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+  }
+
+  if (!safeMethod(settings.type) && sameOrigin(settings.url)) {
+    xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+  }
+});
+
+
+/*global $, confirm, console */
 $(function(){
   "use strict";
 
@@ -36,16 +77,6 @@ $(function(){
         $(document).off('.editbox');
       }
     });
-  };
-
-
-  // turns design mode off for editable elements
-  //
-  // this: the box element that contains all the editable elements
-  var disableEditbox = function() {
-    $(this).removeClass('ui-editbox-active')
-      .find('[contentEditable]')
-      .removeAttr('contenteditable');
   };
 
 
@@ -93,6 +124,17 @@ $(function(){
     disableEditbox.call(this);
   };
 
+
+  // turns design mode off for editable elements
+  //
+  // this: the box element that contains all the editable elements
+  var disableEditbox = function() {
+    $(this).removeClass('ui-editbox-active')
+      .find('[contentEditable]')
+      .removeAttr('contenteditable');
+  };
+
+
   $('.clearonclick').click(function() {
     if ($(this).html() == $(this).attr('data-placeholder')) {
       $(this).html('');
@@ -131,13 +173,13 @@ $(function(){
   $('.deletebutton').each(function (_, el) {
     $(el).click(function() {
       if (confirm('Vuoi veramente eliminare questo elemento?')) {
-        $contentEditable.delete($(el).attr('data-model'), $(el).attr('data-id'));
+        $contentEditable['delete']($(el).attr('data-model'), $(el).attr('data-id'));
       }
       return false;
     });
   });
-
 });
+
 
 $.setEventHandler = function(ev, el, callback) {
   $(el).bind(ev, function() {
@@ -159,46 +201,8 @@ $.setEventHandler = function(ev, el, callback) {
   });
 };
 
-// add csrf to ajax requests
-// https://docs.djangoproject.com/en/1.3/ref/contrib/csrf/#upgrading-notesO
-$(document).ajaxSend(function(event, xhr, settings) {
-  function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-      var cookies = document.cookie.split(';');
-      for (var i = 0; i < cookies.length; i++) {
-        var cookie = jQuery.trim(cookies[i]);
-        // Does this cookie string begin with the name we want?
-        if (cookie.substring(0, name.length + 1) == (name + '=')) {
-          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-          break;
-        }
-      }
-    }
-    return cookieValue;
-  }
-  function sameOrigin(url) {
-    // url could be relative or scheme relative or absolute
-    var host = document.location.host; // host + port
-    var protocol = document.location.protocol;
-    var sr_origin = '//' + host;
-    var origin = protocol + sr_origin;
-    // Allow absolute or scheme relative URLs to same origin
-    return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
-        (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
-        // or any other URL that isn't scheme relative or absolute i.e relative.
-        !(/^(\/\/|http:|https:).*/.test(url));
-  }
-  function safeMethod(method) {
-    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-  }
 
-  if (!safeMethod(settings.type) && sameOrigin(settings.url)) {
-    xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
-  }
-});
-
-$contentEditable = {
+var $contentEditable = {
   options: {'url': '/contenteditable/update/',
         'deleteurl': '/contenteditable/delete/'},
   init: function (options) {
@@ -214,7 +218,7 @@ $contentEditable = {
       data: jQuery.extend(data, {
         'model': model
       }),
-      dataType: 'json',
+      dataType: 'json'
     })
     .success(function(response) {
       console.log("Saved: ", response);
@@ -260,7 +264,7 @@ $contentEditable = {
 };
 
 
-reloadPage = function(url) {
+var reloadPage = function(url) {
   if (url) {
     document.location.href=url;
   } else {
