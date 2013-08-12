@@ -1,8 +1,6 @@
 import json
 
-from django.http import (Http404, HttpResponse, HttpResponseForbidden,
-    HttpResponseBadRequest)
-from django.contrib.auth.views import login_required
+from django.http import Http404, HttpResponse, HttpResponseForbidden
 from django.db import models
 from django.views.decorators.http import require_POST
 from django.views.generic import View

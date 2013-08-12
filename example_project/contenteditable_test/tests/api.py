@@ -1,29 +1,40 @@
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import TestCase
+from django.test.client import RequestFactory
 from django.test.utils import override_settings
 from django.utils import unittest
 
 from newspaper.models import Article
+
+from contenteditable.views import UpdateView
 
 
 class BaseTestCase(TestCase):
     fixtures = ['test_auth.json']
 
     def setUp(self):
+        self.factory = RequestFactory()
         self.obj = Article.objects.get(pk=1)
         self.url = reverse('dce_endpoint')
         self.base_data = {'model': 'article', 'pk': '1'}
 
-    def generate(self, updates):
-        new_data = self.base_data.copy()
-        new_data.update(updates)
-        return new_data
+    def generate(self, updates=None):
+        """
+        Create the data that would be recieved in a JSON request.
+        """
+        if updates is None:
+            return self.base_data.copy()
+        return dict(self.base_data, **updates)
 
 
 class LoggedInTestCase(BaseTestCase):
     def setUp(self):
         super(LoggedInTestCase, self).setUp()
-        self.client.login(username='test', password='test')
+        self.client.login(username='test', password='test')  # DEPRECATED
+        self.user = User.objects.create_user('some_superuser')
+        self.user.is_staff = True
+        self.user.is_superuser = True
 
 
 class HTTPMethods(LoggedInTestCase):
@@ -46,11 +57,15 @@ class HTTPMethods(LoggedInTestCase):
         self.assertEqual(response.status_code, 200)
 
 
-class Updates(LoggedInTestCase):
+class CRUDTest(LoggedInTestCase):
     def test_can_update_field(self):
         new_title = "Poopity Poop Pooh"
-        response = self.client.post(self.url,
-                   self.generate({'title': new_title}))
+        request = self.factory.post(self.url,
+           self.generate({'title': new_title})
+        )
+        request.user = self.user
+        view = UpdateView.as_view()
+        response = view(request)
         self.assertEqual(response.status_code, 200)
         obj = Article.objects.get(pk=1)
         self.assertEqual(obj.title, new_title)
