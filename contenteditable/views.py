@@ -2,22 +2,18 @@ import json
 
 from django.http import Http404, HttpResponse, HttpResponseForbidden
 from django.db import models
-from django.views.decorators.http import require_POST
 from django.views.generic import View
 from django.views.generic.detail import SingleObjectMixin
-
-from contenteditable.utils import content_delete
 
 from . import settings
 
 
 class NoPermission(Exception):
     message = 'User does not have permission'
-    pass
 
 
-class UpdateView(View, SingleObjectMixin):
-    http_method_names = ['post', 'put']  # TODO delete
+class ContentEditableView(View, SingleObjectMixin):
+    http_method_names = ['post', 'put', 'delete']
 
     def get_editable_model_and_fields(self, data):
         model_name = data.pop('model')
@@ -34,14 +30,24 @@ class UpdateView(View, SingleObjectMixin):
         # TODO except model does not exist
         except KeyError:
             raise ValueError('Unknown model: {0}'.format(model))
+        # TODO check add/change/delete based on request type
         if not self.request.user.has_perm(model):
             raise NoPermission
         return model, editable_fields
 
-    def post(self, request, *args, **kwargs):
-        if (not settings.CONTENTEDITABLE_ENABLED):
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Raise 404 if app is disabled.
+
+        This probably isn't the best way to do this. Should probably just not
+        get put into the urlconf.
+        """
+        if not settings.CONTENTEDITABLE_ENABLED:
             # pretend that we don't exist
             raise Http404
+        return super(ContentEditableView, self).dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
         data = request.POST.dict().copy()
         try:
             self.model, editable_fields = self.get_editable_model_and_fields(data)
@@ -66,11 +72,9 @@ class UpdateView(View, SingleObjectMixin):
         #         content_type='application/json')
 
     def put(self, request, *args, **kwargs):
-        if (not settings.CONTENTEDITABLE_ENABLED):
-            # pretend that we don't exist
-            raise Http404
-        # TODO test this
-        data = request.POST.dict().copy()
+        # hacked in just for the test case. don't know what a real PUT request
+        # looks like yet
+        data = request.PUT.copy()
         model, editable_fields = self.get_editable_model_and_fields(data)
         obj_data = {}
         if 'slugfield' in data:
@@ -85,15 +89,27 @@ class UpdateView(View, SingleObjectMixin):
         return HttpResponse(
             json.dumps(dict(message='ok', pk=obj.pk)),
             content_type='application/json')
-        pass
 
+    def delete(self, request, *args, **kwargs):
+        """
+        Here just for completeness and because the old code supported this.
 
-@require_POST
-#@login_required        ### UNCOMMENT THIS!
-def delete_view(request):
-    model = request.POST.get('model')
-    if CONTENTEDITABLE_MODELS.get(model) is not None:
-        content_delete(CONTENTEDITABLE_MODELS[model][0], pk=request.POST.get('id'))
-        return HttpResponse('ok')
-    else:
-        raise ValueError('Unknown model: {0}'.format(request.POST.get('model')))
+        Allowing deletes this way is really dangerous.
+        """
+        # hacked in just for the test case. don't know what a real DELETE
+        # request looks like yet
+        data = request.DELETE.copy()
+        try:
+            self.model, __ = self.get_editable_model_and_fields(data)
+        except NoPermission as e:
+            return HttpResponseForbidden(
+                json.dumps(dict(message=e.message)),
+                content_type='application/json')
+        if 'slugfield' in data:
+            self.slug_field = data.pop('slugfield')
+        self.kwargs.update(data)
+        obj = self.get_object()
+        obj.delete()
+        return HttpResponse(
+            json.dumps(dict(message='ok', pk=obj.pk)),
+            content_type='application/json')

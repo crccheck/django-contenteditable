@@ -193,8 +193,7 @@ $(function(){
 
 
 var $contentEditable = {
-  options: {'url': '/contenteditable/update/',
-        'deleteurl': '/contenteditable/delete/'},
+  options: {'url': '/contenteditable/'},
   init: function (options) {
     jQuery.extend($contentEditable.options, options);
   },
@@ -237,16 +236,19 @@ var $contentEditable = {
       alert("Si è verificato un errore durante il salvataggio. Le modifiche potrebbero non essere state salvate.\nSe il problema persiste ricarica la pagina.");
     });
   },
-  // XXX TODO send DELETE request
   'delete': function(model, id) {
-    console.log("Deleting <"+model+">#"+id);
-    $.post($contentEditable.options['deleteurl'], {
-      'model': model,
-      'id': id
+    console.log("Deleting <" + model + "> #" + id);
+    $.ajax({
+      type: 'DELETE',
+      url: $contentEditable.options.url,
+      data: jQuery.extend(data, {
+        'model': model
+      }),
+      dataType: 'json'
     })
     .success(function(response) {
       console.log("Deleted: ", response);
-      document.location.reload();
+      // document.location.reload();
     })
     .error(function() {
       alert("Impossibile eliminare l'elemento richiesto. La pagina verrà ricaricata.");
