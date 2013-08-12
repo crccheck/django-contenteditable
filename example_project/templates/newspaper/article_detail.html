@@ -7,10 +7,33 @@
     <li><a href="{% url 'article_list' %}">Back to list</a></li>
     <li class="active">{{ article }}</li>
   </ul>
+  {% comment %}
+
+    `{% editablebox %}` goes on the container for a model. This inserts the
+    attributes needed so the JavaScript knows how to save back the right model
+    and object.
+
+  {% endcomment %}
   <article {% editablebox article %}>
+    {% comment %}
+
+      `{% editable %}` is a shortcut for making an editable tag from a field. It
+      takes two arguments:
+        1) the accessor to the field and
+        2) the tag to enclose.
+
+    {% endcomment %}
     {% editable article.title "h3" %}
-    <p {% editableattr "text" "Insert article text here..." %}>
+    {% comment %}
+
+      `{% editableattr %}` is how you would insert the attributes needed to make
+      an editable element into existing markup. It takes two arguments:
+        1. the name of the field
+        2. (optional) placeholder
+
+    {% endcomment %}
+    <div class="content" {% editableattr "text" "Insert article text here..." %}>
       {{ article.text|safe }}
-    </p>
+    </div>
   </article>
 {% endblock %}
