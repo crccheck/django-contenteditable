@@ -84,7 +84,10 @@ STATICFILES_FINDERS = (
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = 'g8qyz8r#3peq-dun0$qqqeaf5n_r7)g9v2i2&hl#)zt*fpjs3m'
+SECRET_KEY = '5f4dcc3b5aa765d61d8327deb882cf99'
+
+# The name of the cookie to use for sessions.
+SESSION_COOKIE_NAME = 'chocolate_chip'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -158,6 +161,8 @@ LOGGING = {
 }
 
 
+# Content Editable Settings
+# WISHLIST: figure out how to do this without polluting settings module
 CONTENTEDITABLE_ENABLED = True
 
 CONTENTEDITABLE_MODELS = (
