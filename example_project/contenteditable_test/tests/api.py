@@ -112,18 +112,3 @@ class Settings(LoggedInTestCase):
         request.user = self.user
         with self.assertRaises(Http404):
             view(request)
-
-    @override_settings(CONTENTEDITABLE_ENABLED=False)
-    def test_tags_do_nothing_when_disabled(self):
-        from contenteditable.templatetags import inlineedit
-        # TODO split into separate tests
-        self.assertEqual(inlineedit.editablebox(self.obj), '')
-        self.assertEqual(inlineedit.editableattr('name', 'placeholder'), '')
-
-    def test_edtitable_tag_does_nothing_when_disabled(self):
-        resp = self.client.get(self.obj.get_absolute_url())
-        enabled_len = len(resp.content)
-        with self.settings(CONTENTEDITABLE_ENABLED=False):
-            resp = self.client.get(self.obj.get_absolute_url())
-            disabled_len = len(resp.content)
-        self.assertTrue(disabled_len < enabled_len)
