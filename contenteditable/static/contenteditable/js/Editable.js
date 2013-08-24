@@ -2,7 +2,7 @@
 /*global document */
 
 
-var Editable = (function($, dceApi) {
+var Editable = (function($, dceApi, Editor) {
   "use strict";
 
   var Editable = function(el) {
@@ -10,16 +10,15 @@ var Editable = (function($, dceApi) {
     this.$el = $(el);
     var data = this.$el.data();
     this.$data = data;
-    var $editables = this.$el.find('[data-editfield]:not(.locked)');
+    var $editables = this.$el.find('[data-editfield]');
     if ($editables.length){
       this.$editables = $editables;
     } else if (data.editfield) {
       this.$editables = this.$el;
     } else {
-      throw "nothingToEdit";
+      throw new Error("nothing to edit");
     }
     this.$el.addClass('ui-editbox-active');
-    this.storeState();
     this.init();
   };
 
@@ -28,12 +27,7 @@ var Editable = (function($, dceApi) {
   // change DOM and setup handlers
   Editable.prototype.init = function() {
     var self = this;
-    this.$editables
-      .attr('contenteditable', 'true')
-      .off('.editbox')  // clear any existing handlers just in case
-      .on('keydown.editbox', function(e) {
-        self.keyHandler.call(self, e);
-      });
+    this.$editables.contenteditable();
     // FIXME remove hack once we get real ui for determining when we're done
     $(document).on('click.editbox', function(evt){
       if (!$(evt.target).closest('.ui-editbox-active').length) {
@@ -47,26 +41,6 @@ var Editable = (function($, dceApi) {
       }
     });
   };
-
-  // Store the state of the $editables
-  Editable.prototype.storeState = function() {
-    // TODO
-  };
-
-  // Handler for keypresses while editing
-  // Editable.prototype.keyHandler = function(evt) {
-  //   switch (evt.which) {
-  //     case 13:  // ENTER
-  //       // this.save.call(this, evt);
-  //       // // or
-  //       // evt.preventDefault();
-  //       // document.execCommand('insertParagraph', false, null);
-  //     break;
-  //     case 27:  // ESC
-  //       this.save.call(this, evt);
-  //     break;
-  //   }
-  // };
 
   // Save contents of element back
   Editable.prototype.save = function() {
@@ -116,10 +90,11 @@ var Editable = (function($, dceApi) {
 
   // Turns design mode off
   Editable.prototype.destroy = function() {
-    this.$el.removeClass('ui-editbox-active')
-      .removeAttr('contenteditable')
+    this.$el
+      .removeClass('ui-editbox-active')
       .off('.editbox');  // XXX
+    this.$editables.contenteditable('destroy');
   };
 
   return Editable;
-})(window.jQuery, window.$contentEditable);
+})(window.jQuery, window.$contentEditable, window.Editor);
