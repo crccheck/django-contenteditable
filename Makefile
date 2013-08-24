@@ -30,6 +30,12 @@ dumpdata:
 	$(DJ) dumpdata newspaper chunks --indent=2 > $(PROJECT)/newspaper/fixtures/initial_data.json
 
 
+static:
+	cd contenteditable/static/contenteditable && make build
+
+staticwatch:
+	cd contenteditable/static/contenteditable && make watch
+
 # grab latest version of medium.js
 mediumjs:
 	cd contenteditable/static/mediumjs && \
@@ -37,4 +43,4 @@ mediumjs:
 	-O https://raw.github.com/jakiestfu/Medium.js/master/medium.js
 
 
-.PHONY: clean test resetdb dumpdata mediumjs
+.PHONY: clean test resetdb dumpdata mediumjs static staticwatch mediumjs
