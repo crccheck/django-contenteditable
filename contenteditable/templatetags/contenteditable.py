@@ -90,8 +90,8 @@ class EditableModelFieldNode(template.Node):
             fieldname = self.fieldname
             field = obj._meta.get_field(fieldname)
             container = self.container.resolve(context)
-        except (template.VariableDoesNotExist, fields.FieldDoesNotExist):
-            return u''
+        except (template.VariableDoesNotExist, fields.FieldDoesNotExist) as e:
+            raise template.TemplateSyntaxError(e)
         base_format = u'<{0} {1}>{2}</{0}>' if settings.CONTENTEDITABLE_ENABLED\
             else u'<{0}>{2}</{0}>'
         attrs = [u'data-editfield="%s"' % fieldname,

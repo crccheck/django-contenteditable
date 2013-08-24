@@ -1,4 +1,4 @@
-from django.template import Context, Template
+from django.template import Context, Template, TemplateSyntaxError
 from django.test import TestCase
 from django.test.utils import override_settings
 
@@ -42,6 +42,22 @@ class TemplatetagsTest(TestCase):
         self.assertIn('data-editfield', out)
         self.assertIn('data-editwidget', out)
         self.assertIn('</poop>', out)
+
+    def test_editable_needs_object(self):
+        t = Template('{% load editable from contenteditable %}'
+                '{% editable poop.title %}')
+        c = Context()
+        with self.assertRaises(TemplateSyntaxError):
+            t.render(c)
+
+    def test_editable_needs_valid_fieldname(self):
+        t = Template('{% load editable from contenteditable %}'
+                '{% editable object.poop %}')
+        c = Context({
+            'object': self.obj,
+        })
+        with self.assertRaises(TemplateSyntaxError):
+            t.render(c)
 
     def test_editableitem(self):
         # TODO I'm not sure what this does. I don't think it's used.
