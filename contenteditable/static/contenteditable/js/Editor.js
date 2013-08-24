@@ -13,6 +13,7 @@
   function Editor($el, options) {
     this.$el = $el;
     this.el = $el[0];
+    this.state = [];
     this.init();
   }
 
@@ -23,11 +24,7 @@
       .on('keydown.' + NAME, function(e) {
         self.keyHandler.call(self, e);
       });
-  };
-
-  // Store the state of the contents
-  Editor.prototype.storeState = function() {
-    // TODO
+    this.storeState();
   };
 
   // Handler for keypresses while editing
@@ -43,15 +40,26 @@
         // document.execCommand('insertParagraph', false, null);
       break;
       case 27:  // ESC
-        // TODO
+        this.reset();
+        this.destroy();
       break;
     }
+  };
+
+  Editor.prototype.reset = function() {
+    this.el.innerHTML = this.state[0];
+  };
+
+  // Store the state of the contents
+  Editor.prototype.storeState = function() {
+    this.state.push(this.el.innerHTML);
   };
 
   Editor.prototype.destroy = function() {
     this.$el
       .removeAttr('contenteditable')
       .off('.' + NAME);
+    // TODO trigger an event
   };
 
 
