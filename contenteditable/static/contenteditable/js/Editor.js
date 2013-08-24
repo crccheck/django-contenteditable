@@ -34,6 +34,9 @@
   Editor.prototype.keyHandler = function(evt) {
     switch (evt.which) {
       case 13:  // ENTER
+        if (this.$el.is('h1, h2, h3, h4, h5')) {
+          evt.preventDefault();
+        }
         // this.save.call(this, evt);
         // // or
         // evt.preventDefault();
