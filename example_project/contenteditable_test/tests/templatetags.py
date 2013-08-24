@@ -1,7 +1,3 @@
-import datetime
-import random
-
-from django.core.exceptions import ImproperlyConfigured
 from django.template import Context, Template
 from django.test import TestCase
 from django.test.utils import override_settings
@@ -25,26 +21,29 @@ class TemplatetagsTest(TestCase):
         c = Context({
             'object': self.obj,
         })
-        self.assertTrue(t.render(c))
+        out = t.render(c)
+        self.assertIn('data-edit', out)
 
     def test_editableattr(self):
         t = Template('{% load editableattr from contenteditable %}'
-                '{% editableattr "hi" %}')
+                '{% editableattr "attrname" %}')
         c = Context()
-        self.assertTrue(t.render(c))
+        out = t.render(c)
+        self.assertIn('data-edit', out)
 
     def test_editable(self):
         t = Template('{% load editable from contenteditable %}'
-                '{% editable object.title "hi" %}')
+                '{% editable object.title "poop" %}')
         c = Context({
             'object': self.obj,
         })
-        self.assertTrue(t.render(c))
+        out = t.render(c)
+        self.assertIn('data-edit', out)
+        self.assertIn('</poop>', out)
 
     def test_editableitem(self):
-        # TODO
+        # TODO I'm not sure what this does. I don't think it's used.
         pass
-
 
     @override_settings(CONTENTEDITABLE_ENABLED=False)
     def test_tags_do_nothing_when_disabled(self):

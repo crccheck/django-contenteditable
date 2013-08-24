@@ -4,7 +4,7 @@ from django.http import Http404
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.test.utils import override_settings
-from django.utils import unittest
+from django.utils.unittest import expectedFailure, skip
 
 from newspaper.models import Article
 
@@ -45,12 +45,12 @@ class HTTPMethods(LoggedInTestCase):
         response = self.client.post(self.url, self.base_data)
         self.assertEqual(response.status_code, 200)
 
-    @unittest.expectedFailure
+    @skip("covered below, django test client won't send PUT params")
     def test_put_is_allowed(self):
         response = self.client.put(self.url, self.base_data)
         self.assertEqual(response.status_code, 200)
 
-    @unittest.expectedFailure
+    @skip("covered below, django test client won't send DELETE params")
     def test_delete_is_allowed(self):
         response = self.client.delete(self.url, self.base_data)
         self.assertEqual(response.status_code, 200)
