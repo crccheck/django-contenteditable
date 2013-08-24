@@ -4,7 +4,7 @@ from django.http import Http404
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.test.utils import override_settings
-from django.utils import unittest
+from django.utils.unittest import expectedFailure, skip
 
 from newspaper.models import Article
 
@@ -45,12 +45,12 @@ class HTTPMethods(LoggedInTestCase):
         response = self.client.post(self.url, self.base_data)
         self.assertEqual(response.status_code, 200)
 
-    @unittest.expectedFailure
+    @skip("covered below, django test client won't send PUT params")
     def test_put_is_allowed(self):
         response = self.client.put(self.url, self.base_data)
         self.assertEqual(response.status_code, 200)
 
-    @unittest.expectedFailure
+    @skip("covered below, django test client won't send DELETE params")
     def test_delete_is_allowed(self):
         response = self.client.delete(self.url, self.base_data)
         self.assertEqual(response.status_code, 200)
@@ -112,18 +112,3 @@ class Settings(LoggedInTestCase):
         request.user = self.user
         with self.assertRaises(Http404):
             view(request)
-
-    @override_settings(CONTENTEDITABLE_ENABLED=False)
-    def test_tags_do_nothing_when_disabled(self):
-        from contenteditable.templatetags import inlineedit
-        # TODO split into separate tests
-        self.assertEqual(inlineedit.editablebox(self.obj), '')
-        self.assertEqual(inlineedit.editableattr('name', 'placeholder'), '')
-
-    def test_edtitable_tag_does_nothing_when_disabled(self):
-        resp = self.client.get(self.obj.get_absolute_url())
-        enabled_len = len(resp.content)
-        with self.settings(CONTENTEDITABLE_ENABLED=False):
-            resp = self.client.get(self.obj.get_absolute_url())
-            disabled_len = len(resp.content)
-        self.assertTrue(disabled_len < enabled_len)

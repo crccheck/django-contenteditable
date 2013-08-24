@@ -10,6 +10,7 @@ var Editable = (function($, dceApi, Medium) {
     this.$el = $(el);
     this.editor = null;  // Medium.js editor
     var data = this.$el.data();
+    this.$data = data;
     var $editables = this.$el.find('[data-editfield]:not(.locked)');
     if ($editables.length){
       this.$editables = $editables;
@@ -34,10 +35,21 @@ var Editable = (function($, dceApi, Medium) {
     //   .on('keydown.editbox', function(e) {
     //     self.keyHandler.call(self, e);
     //   });
-    this.editor = new Medium({
-      debug: true,
-      element: this.el
-    });
+    var widgetToMode = {
+          CharField: 'inline'
+          // TextField
+        },
+        options = {
+          debug: true,
+          element: this.el,
+          mode: widgetToMode[this.$data.widget] || 'rich',  // TODO
+          tags: {
+            // paragraph: 'p',
+            outerLevel: ['pre','blockquote', 'figure', 'hr', 'article', 'h1', 'h2', 'h3', 'h4', 'h5']
+            // innerLevel: ['a', 'b', 'u', 'i', 'img', 'strong']
+          }
+        };
+    this.editor = new Medium(options);
     // FIXME remove hack once we get real ui for determining when we're done
     $(document).on('click.editbox', function(evt){
       if (!$(evt.target).closest('.ui-editbox-active').length) {
@@ -76,20 +88,21 @@ var Editable = (function($, dceApi, Medium) {
   Editable.prototype.save = function() {
     var $box = this.$el,
         data = $box.data(),
-        pk = data.editpk,
+        meta = data.editmeta,
+        pk = meta.pk,
         save_data = {};
-    if (!data.editmodel){
-      throw "missingModel";
+    if (!meta.model){
+      throw new Error("missing model");
     }
     if (pk){
       save_data.pk = pk;
-    } else if (data.editslug) {
-      save_data.slug = data.editslug;
-      if (data.editslugfield){
-        save_data.slugfield = data.editslugfield;
+    } else if (meta.slug) {
+      save_data.slug = meta.slug;
+      if (meta.slugfield){
+        save_data.slugfield = meta.slugfield;
       }
     } else {
-      throw "missingPK";
+      throw new Error("missing PK");
     }
     var editables = $box.find('[data-editfield]');
     if (editables.length) {
@@ -105,10 +118,13 @@ var Editable = (function($, dceApi, Medium) {
       throw "missingData";
     }
     if (pk !== -1) {
-      dceApi.save(data.editmodel, save_data);
+      // UPDATE
+      dceApi.save(meta.model, save_data);
+      // INSERT
     } else {
-      dceApi.insert(data.editmodel, save_data, function(data) {
-        $box.attr('data-editpk', data.pk);
+      dceApi.insert(meta.model, save_data, function(data) {
+        meta.pk = data.pk;
+        $box.attr('data-editmeta', JSON.stringify(meta));
       });
     }
     this.destroy();
