@@ -1,5 +1,10 @@
 /* Default contenteditable css */
+.ui-editbox:after {
+  color: #aaaaaa;
+  content: "edit";
+  position: absolute; }
 
 .ui-editbox-active {
-  outline: 2000em solid rgba(0, 0, 0, 0.5);
-}
+  outline: 2000em solid rgba(0, 0, 0, 0.5) !important; }
+  .ui-editbox-active:after {
+    content: "editing"; }

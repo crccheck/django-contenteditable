@@ -5,6 +5,7 @@ bin/*
 build/*
 dist/
 example_project/*.sqlite
+.sass-cache
 
 # testing
 .tox
