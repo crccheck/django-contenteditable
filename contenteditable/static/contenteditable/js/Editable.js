@@ -2,7 +2,7 @@
 /*global document */
 
 
-var Editable = (function($, dceApi) {
+var Editable = (function($, dceApi, Medium) {
   "use strict";
 
   var Editable = function(el) {
@@ -13,6 +13,7 @@ var Editable = (function($, dceApi) {
   Editable.prototype.init = function(el) {
     this.el = el;
     this.$el = $(el);
+    this.editor = null;  // Medium.js editor
     var data = this.$el.data();
     var $editables = this.$el.find('[data-editfield]:not(.locked)');
     if ($editables.length){
@@ -32,12 +33,15 @@ var Editable = (function($, dceApi) {
   // change DOM and setup handlers
   Editable.prototype.start = function() {
     var self = this;
-    this.$editables
-      .attr('contenteditable', 'true')
-      .off('.editbox')  // clear any existing handlers just in case
-      .on('keydown.editbox', function(e) {
-        self.keyHandler.call(self, e);
-      });
+    // this.$editables
+    //   .attr('contenteditable', 'true')
+    //   .off('.editbox')  // clear any existing handlers just in case
+    //   .on('keydown.editbox', function(e) {
+    //     self.keyHandler.call(self, e);
+    //   });
+    this.editor = new Medium({
+      element: this.el
+    });
     // FIXME remove hack once we get real ui for determining when we're done
     $(document).on('click.editbox', function(evt){
       if (!$(evt.target).closest('.ui-editbox-active').length) {
@@ -58,19 +62,19 @@ var Editable = (function($, dceApi) {
   };
 
   // Handler for keypresses while editing
-  Editable.prototype.keyHandler = function(evt) {
-    switch (evt.which) {
-      case 13:  // ENTER
-        // this.save.call(this, evt);
-        // // or
-        // evt.preventDefault();
-        // document.execCommand('insertParagraph', false, null);
-      break;
-      case 27:  // ESC
-        this.save.call(this, evt);
-      break;
-    }
-  };
+  // Editable.prototype.keyHandler = function(evt) {
+  //   switch (evt.which) {
+  //     case 13:  // ENTER
+  //       // this.save.call(this, evt);
+  //       // // or
+  //       // evt.preventDefault();
+  //       // document.execCommand('insertParagraph', false, null);
+  //     break;
+  //     case 27:  // ESC
+  //       this.save.call(this, evt);
+  //     break;
+  //   }
+  // };
 
   // Save contents of element back
   Editable.prototype.save = function() {
@@ -123,4 +127,4 @@ var Editable = (function($, dceApi) {
   };
 
   return Editable;
-})(window.jQuery, window.$contentEditable);
+})(window.jQuery, window.$contentEditable, window.Medium);
