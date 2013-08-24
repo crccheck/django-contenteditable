@@ -76,20 +76,21 @@ var Editable = (function($, dceApi, Medium) {
   Editable.prototype.save = function() {
     var $box = this.$el,
         data = $box.data(),
-        pk = data.editpk,
+        meta = data.editmeta,
+        pk = meta.pk,
         save_data = {};
-    if (!data.editmodel){
-      throw "missingModel";
+    if (!meta.model){
+      throw new Error("missing model");
     }
     if (pk){
       save_data.pk = pk;
-    } else if (data.editslug) {
-      save_data.slug = data.editslug;
-      if (data.editslugfield){
-        save_data.slugfield = data.editslugfield;
+    } else if (meta.slug) {
+      save_data.slug = meta.slug;
+      if (meta.slugfield){
+        save_data.slugfield = meta.slugfield;
       }
     } else {
-      throw "missingPK";
+      throw new Error("missing PK");
     }
     var editables = $box.find('[data-editfield]');
     if (editables.length) {
@@ -105,10 +106,13 @@ var Editable = (function($, dceApi, Medium) {
       throw "missingData";
     }
     if (pk !== -1) {
-      dceApi.save(data.editmodel, save_data);
+      // UPDATE
+      dceApi.save(meta.model, save_data);
+      // INSERT
     } else {
-      dceApi.insert(data.editmodel, save_data, function(data) {
-        $box.attr('data-editpk', data.pk);
+      dceApi.insert(meta.model, save_data, function(data) {
+        meta.pk = data.pk;
+        $box.attr('data-editmeta', JSON.stringify(meta));
       });
     }
     this.destroy();

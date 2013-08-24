@@ -1,3 +1,5 @@
+import json
+
 from django import template
 from django.db.models import fields
 from django.utils.safestring import mark_safe
@@ -13,11 +15,12 @@ register = template.Library()
 def editablebox(obj):
     if not settings.CONTENTEDITABLE_ENABLED:
         return ''
-    data = (
-        obj._meta.app_label,
-        obj._meta.object_name.lower(),
-        obj.pk)
-    return 'data-editapp={0} data-editmodel={1} data-editpk={2}'.format(*data)
+    json_data = json.dumps(dict(
+        app=obj._meta.app_label,
+        model=obj._meta.object_name.lower(),
+        pk=obj.pk
+    ))
+    return "data-editmeta='{0}'".format(json_data)
 
 
 @register.simple_tag
@@ -105,9 +108,13 @@ try:
     def editablechunk(key):
         if not settings.CONTENTEDITABLE_ENABLED:
             return ''
-        return ('data-editapp="chunks" data-editmodel="chunk" '
-                'data-editslugfield="key"'
-                'data-editfield="content" data-editslug="%s"') % key
+        json_data = json.dumps(dict(
+            app='chunks',
+            model='chunk',
+            slugfield='key',
+            slug=key,
+        ))
+        return "data-editmeta='{0}' data-editfield='content'".format(json_data)
 
 except ImportError:
     pass

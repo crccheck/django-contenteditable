@@ -27,7 +27,7 @@ $(function(){
   });
 
   // not an efficient selector but makes this easier to implement in the templates
-  $('[data-editpk], [data-editslug]')
+  $('[data-editmeta]')
     .addClass('ui-editbox')
     .on('dblclick', enableEditbox);
 });

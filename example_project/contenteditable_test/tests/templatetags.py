@@ -22,7 +22,7 @@ class TemplatetagsTest(TestCase):
             'object': self.obj,
         })
         out = t.render(c)
-        self.assertIn('data-edit', out)
+        self.assertIn('data-editmeta', out)
 
     def test_editableattr(self):
         t = Template('{% load editableattr from contenteditable %}'
