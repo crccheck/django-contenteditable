@@ -10,6 +10,7 @@ var Editable = (function($, dceApi, Medium) {
     this.$el = $(el);
     this.editor = null;  // Medium.js editor
     var data = this.$el.data();
+    this.$data = data;
     var $editables = this.$el.find('[data-editfield]:not(.locked)');
     if ($editables.length){
       this.$editables = $editables;
@@ -34,10 +35,21 @@ var Editable = (function($, dceApi, Medium) {
     //   .on('keydown.editbox', function(e) {
     //     self.keyHandler.call(self, e);
     //   });
-    this.editor = new Medium({
-      debug: true,
-      element: this.el
-    });
+    var widgetToMode = {
+          CharField: 'inline'
+          // TextField
+        },
+        options = {
+          debug: true,
+          element: this.el,
+          mode: widgetToMode[this.$data.widget] || 'rich',  // TODO
+          tags: {
+            // paragraph: 'p',
+            outerLevel: ['pre','blockquote', 'figure', 'hr', 'article', 'h1', 'h2', 'h3', 'h4', 'h5']
+            // innerLevel: ['a', 'b', 'u', 'i', 'img', 'strong']
+          }
+        };
+    this.editor = new Medium(options);
     // FIXME remove hack once we get real ui for determining when we're done
     $(document).on('click.editbox', function(evt){
       if (!$(evt.target).closest('.ui-editbox-active').length) {
