@@ -2,13 +2,12 @@
 /*global document */
 
 
-var Editable = (function($, dceApi, Medium) {
+var Editable = (function($, dceApi) {
   "use strict";
 
   var Editable = function(el) {
     this.el = el;
     this.$el = $(el);
-    this.editor = null;  // Medium.js editor
     var data = this.$el.data();
     this.$data = data;
     var $editables = this.$el.find('[data-editfield]:not(.locked)');
@@ -29,27 +28,12 @@ var Editable = (function($, dceApi, Medium) {
   // change DOM and setup handlers
   Editable.prototype.init = function() {
     var self = this;
-    // this.$editables
-    //   .attr('contenteditable', 'true')
-    //   .off('.editbox')  // clear any existing handlers just in case
-    //   .on('keydown.editbox', function(e) {
-    //     self.keyHandler.call(self, e);
-    //   });
-    var widgetToMode = {
-          CharField: 'inline'
-          // TextField
-        },
-        options = {
-          debug: true,
-          element: this.el,
-          mode: widgetToMode[this.$data.widget] || 'rich',  // TODO
-          tags: {
-            // paragraph: 'p',
-            outerLevel: ['pre','blockquote', 'figure', 'hr', 'article', 'h1', 'h2', 'h3', 'h4', 'h5']
-            // innerLevel: ['a', 'b', 'u', 'i', 'img', 'strong']
-          }
-        };
-    this.editor = new Medium(options);
+    this.$editables
+      .attr('contenteditable', 'true')
+      .off('.editbox')  // clear any existing handlers just in case
+      .on('keydown.editbox', function(e) {
+        self.keyHandler.call(self, e);
+      });
     // FIXME remove hack once we get real ui for determining when we're done
     $(document).on('click.editbox', function(evt){
       if (!$(evt.target).closest('.ui-editbox-active').length) {
@@ -132,16 +116,10 @@ var Editable = (function($, dceApi, Medium) {
 
   // Turns design mode off
   Editable.prototype.destroy = function() {
-    this.editor.destroy();
-    // workaround for Medium doing a terrible job of cleaning up after itself
-    var classes = this.el.className.split(' ');
-    classes = classes.filter(function(x) { return x.substr(0, 6) != 'Medium'; });
-    this.el.className = classes.join(' ');
-
     this.$el.removeClass('ui-editbox-active')
       .removeAttr('contenteditable')
       .off('.editbox');  // XXX
   };
 
   return Editable;
-})(window.jQuery, window.$contentEditable, window.Medium);
+})(window.jQuery, window.$contentEditable);
