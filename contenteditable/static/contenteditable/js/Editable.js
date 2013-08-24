@@ -6,11 +6,6 @@ var Editable = (function($, dceApi, Medium) {
   "use strict";
 
   var Editable = function(el) {
-    this.init(el);
-  };
-
-  // Init
-  Editable.prototype.init = function(el) {
     this.el = el;
     this.$el = $(el);
     this.editor = null;  // Medium.js editor
@@ -25,13 +20,13 @@ var Editable = (function($, dceApi, Medium) {
     }
     this.$el.addClass('ui-editbox-active');
     this.storeState();
-    this.start();
+    this.init();
   };
 
-  // Start
+  // Init
   //
   // change DOM and setup handlers
-  Editable.prototype.start = function() {
+  Editable.prototype.init = function() {
     var self = this;
     // this.$editables
     //   .attr('contenteditable', 'true')
@@ -48,7 +43,7 @@ var Editable = (function($, dceApi, Medium) {
         try {
           self.save.call(self, evt);
         } catch (e){
-          self.disable.call(self);
+          self.destroy.call(self);
           console.warn(e);
         }
         $(document).off('.editbox');
@@ -115,11 +110,12 @@ var Editable = (function($, dceApi, Medium) {
         $box.attr('data-editpk', data.pk);
       });
     }
-    this.disable();
+    this.destroy();
   };
 
   // Turns design mode off
-  Editable.prototype.disable = function() {
+  Editable.prototype.destroy = function() {
+    this.editor.destroy();
     this.$el.removeClass('ui-editbox-active')
       .find('[contentEditable]')
       .removeAttr('contenteditable')
