@@ -35,6 +35,7 @@ var Editable = (function($, dceApi, Medium) {
     //     self.keyHandler.call(self, e);
     //   });
     this.editor = new Medium({
+      debug: true,
       element: this.el
     });
     // FIXME remove hack once we get real ui for determining when we're done
@@ -116,8 +117,12 @@ var Editable = (function($, dceApi, Medium) {
   // Turns design mode off
   Editable.prototype.destroy = function() {
     this.editor.destroy();
+    // workaround for Medium doing a terrible job of cleaning up after itself
+    var classes = this.el.className.split(' ');
+    classes = classes.filter(function(x) { return x.substr(0, 6) != 'Medium'; });
+    this.el.className = classes.join(' ');
+
     this.$el.removeClass('ui-editbox-active')
-      .find('[contentEditable]')
       .removeAttr('contenteditable')
       .off('.editbox');  // XXX
   };
