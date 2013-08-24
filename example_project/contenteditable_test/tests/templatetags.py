@@ -29,7 +29,8 @@ class TemplatetagsTest(TestCase):
                 '{% editableattr "attrname" %}')
         c = Context()
         out = t.render(c)
-        self.assertIn('data-edit', out)
+        self.assertIn('data-editfield', out)
+        # TODO self.assertIn('data-editwidget', out)
 
     def test_editable(self):
         t = Template('{% load editable from contenteditable %}'
@@ -38,7 +39,8 @@ class TemplatetagsTest(TestCase):
             'object': self.obj,
         })
         out = t.render(c)
-        self.assertIn('data-edit', out)
+        self.assertIn('data-editfield', out)
+        self.assertIn('data-editwidget', out)
         self.assertIn('</poop>', out)
 
     def test_editableitem(self):

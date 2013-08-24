@@ -13,8 +13,17 @@ register = template.Library()
 ## EditableBox
 @register.simple_tag
 def editablebox(obj):
+    """
+    Generates the attributes so the JavaScript knows which object to save.
+
+    Usage:
+
+        <div {% editablebox object %}>
+          ...
+        </div>
+    """
     if not settings.CONTENTEDITABLE_ENABLED:
-        return ''
+        return u''
     json_data = json.dumps(dict(
         app=obj._meta.app_label,
         model=obj._meta.object_name.lower(),
@@ -24,15 +33,36 @@ def editablebox(obj):
 
 
 @register.simple_tag
-def editableattr(name, placeholder=""):
+def editableattr(field_name, placeholder=""):
+    """
+    The attributes to associate the DOM node to a model field.
+
+    Usage:
+
+        <h2 {% editableattr 'title' %}>
+          {{ object.title }}
+        </h2>
+    """
     if not settings.CONTENTEDITABLE_ENABLED:
-        return ''
+        return u''
+    # TODO only put in placeholder if needed
+    # TODO implement data-editwidget
     return 'data-editfield="{0}" data-placeholder="{1}" '.\
-        format(name, placeholder)
+        format(field_name, placeholder)
 
 
 @register.tag(name='editable')
 def do_editable(parser, token):
+    """
+    Shorcut alternative to `editableattr` tag.
+
+    Defaults to wrapping with a SPAN tag.
+
+    Usage:
+
+        {% editable object.title "h2" %}
+    """
+    # TODO implement settings.CONTENTEDITABLE_ENABLED
     try:
         bits = token.split_contents()
         if len(bits) == 3:
@@ -61,14 +91,14 @@ class EditableModelFieldNode(template.Node):
             field = obj._meta.get_field(fieldname)
             container = self.container.resolve(context)
         except (template.VariableDoesNotExist, fields.FieldDoesNotExist):
-            return ''
-        base_string = '<{0} {1}>{2}</{0}>' if settings.CONTENTEDITABLE_ENABLED\
-            else '<{0}>{2}</{0}>'
-        attrs = ['data-editfield="%s"' % fieldname,
-                 'data-placeholder="%s"' % (field.default if
+            return u''
+        base_format = u'<{0} {1}>{2}</{0}>' if settings.CONTENTEDITABLE_ENABLED\
+            else u'<{0}>{2}</{0}>'
+        attrs = [u'data-editfield="%s"' % fieldname,
+                 u'data-placeholder="%s"' % (field.default if
                      field.default != fields.NOT_PROVIDED else ''),
-                 'data-editwidget="%s"' % field.__class__.__name__]
-        out = base_string.format(container, " ".join(attrs),
+                 u'data-editwidget="%s"' % field.__class__.__name__]
+        out = base_format.format(container, " ".join(attrs),
                                  getattr(obj, fieldname))
         return mark_safe(out)
 
