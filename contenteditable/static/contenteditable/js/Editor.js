@@ -23,6 +23,10 @@
       .attr('contenteditable', 'true')
       .on('keydown.' + NAME, function(e) {
         self.keyHandler.call(self, e);
+      })
+      // XXX
+      .on('focus', function(e) {
+        // toolbar.attachTo(self.$el);
       });
     this.storeState();
   };
@@ -60,7 +64,9 @@
       .removeAttr('contenteditable')
       .off('.' + NAME);
     // TODO trigger an event
+    // toolbar.destroy();
   };
+
 
 
   $.fn.contenteditable = function(options) {

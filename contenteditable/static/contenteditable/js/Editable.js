@@ -1,5 +1,5 @@
 // handles converting a DOM Node to/from a contenteditable.
-/*global document */
+/*global document, toolbar */
 
 
 var Editable = (function($, dceApi, Editor) {
@@ -28,18 +28,7 @@ var Editable = (function($, dceApi, Editor) {
   Editable.prototype.init = function() {
     var self = this;
     this.$editables.contenteditable();
-    // FIXME remove hack once we get real ui for determining when we're done
-    $(document).on('click.editbox', function(evt){
-      if (!$(evt.target).closest('.ui-editbox-active').length) {
-        try {
-          self.save.call(self, evt);
-        } catch (e){
-          self.destroy.call(self);
-          console.warn(e);
-        }
-        $(document).off('.editbox');
-      }
-    });
+    // toolbar.attachTo(this.$el);
   };
 
   // Save contents of element back

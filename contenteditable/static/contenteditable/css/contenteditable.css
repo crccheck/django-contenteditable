@@ -1,10 +1,30 @@
 /* Default contenteditable css */
-.ui-editbox:after {
-  color: #aaaaaa;
-  content: "edit";
-  position: absolute; }
-
 .ui-editbox-active {
   outline: 2000em solid rgba(0, 0, 0, 0.5) !important; }
-  .ui-editbox-active:after {
-    content: "editing"; }
+
+.toolbar {
+  -webkit-transition-duration: 300ms;
+  -moz-transition-duration: 300ms;
+  -o-transition-duration: 300ms;
+  transition-duration: 300ms;
+  -webkit-transition-property: left, top, width;
+  -moz-transition-property: left, top, width;
+  -o-transition-property: left, top, width;
+  transition-property: left, top, width;
+  background: #cccccc;
+  position: absolute; }
+
+.editme {
+  background: rgba(221, 160, 221, 0.5);
+  color: #eeeeee;
+  cursor: pointer;
+  font-size: 0.8em;
+  font-weight: bold;
+  letter-spacing: 1px;
+  line-height: 1.5;
+  margin-top: -1.5em;
+  text-align: center;
+  text-transform: uppercase; }
+
+.dce-hover {
+  outline: 2px solid red; }
