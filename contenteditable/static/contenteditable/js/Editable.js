@@ -2,25 +2,26 @@
 /*global document */
 
 
-var Editable = (function($, dceApi, Medium) {
+var Editable = (function($, dceApi, Editor) {
   "use strict";
+
+  var NAME = 'editbox';
+
 
   var Editable = function(el) {
     this.el = el;
     this.$el = $(el);
-    this.editor = null;  // Medium.js editor
+    this.stateHash = [];
     var data = this.$el.data();
-    this.$data = data;
-    var $editables = this.$el.find('[data-editfield]:not(.locked)');
+    var $editables = this.$el.find('[data-editfield]');
     if ($editables.length){
       this.$editables = $editables;
     } else if (data.editfield) {
       this.$editables = this.$el;
     } else {
-      throw "nothingToEdit";
+      throw new Error("nothing to edit");
     }
     this.$el.addClass('ui-editbox-active');
-    this.storeState();
     this.init();
   };
 
@@ -29,63 +30,34 @@ var Editable = (function($, dceApi, Medium) {
   // change DOM and setup handlers
   Editable.prototype.init = function() {
     var self = this;
-    // this.$editables
-    //   .attr('contenteditable', 'true')
-    //   .off('.editbox')  // clear any existing handlers just in case
-    //   .on('keydown.editbox', function(e) {
-    //     self.keyHandler.call(self, e);
-    //   });
-    var widgetToMode = {
-          CharField: 'inline'
-          // TextField
-        },
-        options = {
-          debug: true,
-          element: this.el,
-          mode: widgetToMode[this.$data.widget] || 'rich',  // TODO
-          tags: {
-            // paragraph: 'p',
-            outerLevel: ['pre','blockquote', 'figure', 'hr', 'article', 'h1', 'h2', 'h3', 'h4', 'h5']
-            // innerLevel: ['a', 'b', 'u', 'i', 'img', 'strong']
-          }
-        };
-    this.editor = new Medium(options);
-    // FIXME remove hack once we get real ui for determining when we're done
-    $(document).on('click.editbox', function(evt){
-      if (!$(evt.target).closest('.ui-editbox-active').length) {
-        try {
-          self.save.call(self, evt);
-        } catch (e){
-          self.destroy.call(self);
-          console.warn(e);
-        }
-        $(document).off('.editbox');
-      }
+    this.$editables.contenteditable();
+    this.$el.on('editorDestroyed.' + NAME, function() {
+      var $editing = self.$editables.filter('[contenteditable]');
+      self.save();
     });
+    this.storeStateHash();
+    // autofocus
+    this.$editables.eq(0).focus();
   };
 
-  // Store the state of the $editables
-  Editable.prototype.storeState = function() {
-    // TODO
+  // store hash of the state to detect if it changed
+  Editable.prototype.storeStateHash = function() {
+    // TODO a more robust hash
+    this.stateHash.push(this.$editables.text());
   };
 
-  // Handler for keypresses while editing
-  // Editable.prototype.keyHandler = function(evt) {
-  //   switch (evt.which) {
-  //     case 13:  // ENTER
-  //       // this.save.call(this, evt);
-  //       // // or
-  //       // evt.preventDefault();
-  //       // document.execCommand('insertParagraph', false, null);
-  //     break;
-  //     case 27:  // ESC
-  //       this.save.call(this, evt);
-  //     break;
-  //   }
-  // };
+  Editable.prototype.addHelper = function(el) {
+    this.$helper = $(el);
+  };
 
-  // Save contents of element back
+  // Save contents of element back and then destroy self
   Editable.prototype.save = function() {
+    this.storeStateHash();
+    if (this.stateHash[this.stateHash.length - 1] == this.stateHash[0]) {
+      console.log('nothing changed')
+      this.destroy();
+      return;
+    }
     var $box = this.$el,
         data = $box.data(),
         meta = data.editmeta,
@@ -132,16 +104,14 @@ var Editable = (function($, dceApi, Medium) {
 
   // Turns design mode off
   Editable.prototype.destroy = function() {
-    this.editor.destroy();
-    // workaround for Medium doing a terrible job of cleaning up after itself
-    var classes = this.el.className.split(' ');
-    classes = classes.filter(function(x) { return x.substr(0, 6) != 'Medium'; });
-    this.el.className = classes.join(' ');
-
-    this.$el.removeClass('ui-editbox-active')
-      .removeAttr('contenteditable')
-      .off('.editbox');  // XXX
+    if (this.$helper) {
+      this.$helper.text('Edit'); // XXX
+    }
+    this.$el
+      .removeClass('ui-editbox-active')
+      .off('.' + NAME);
+    this.$editables.filter('[contenteditable]').contenteditable('destroy');
   };
 
   return Editable;
-})(window.jQuery, window.$contentEditable, window.Medium);
+})(window.jQuery, window.$contentEditable, window.Editor);

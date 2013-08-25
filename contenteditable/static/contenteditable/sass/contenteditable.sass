@@ -1,14 +1,31 @@
 /* Default contenteditable css */
-
-.ui-editbox
-  &:after
-    color: #aaa
-    content: "edit"
-    position: absolute
-
-
+@import "compass/css3/transition"
 
 .ui-editbox-active
   outline: 2000em solid rgba(0, 0, 0, 0.5) !important
-  &:after
-    content: "editing"
+
+
+.toolbar
+  +transition-duration(300ms)
+  +transition-property(left, top, width)
+  background: #ccc
+  line-height: 1.5
+  margin-top: -1.5em
+  position: absolute
+
+
+// little 'edit' button that shows up next to every editable button
+.editme
+  background: transparentize(plum, .5)
+  color: #eee
+  cursor: pointer
+  font-size: 0.8em
+  font-weight: bold
+  letter-spacing: 1px
+  line-height: 1.5
+  margin-top: -1.5em
+  text-align: center
+  text-transform: uppercase
+
+.dce-hover
+  outline: 2px solid red
