@@ -11,8 +11,8 @@ var Editable = (function($, dceApi, Editor) {
   var Editable = function(el) {
     this.el = el;
     this.$el = $(el);
+    this.stateHash = [];
     var data = this.$el.data();
-    this.$data = data;
     var $editables = this.$el.find('[data-editfield]');
     if ($editables.length){
       this.$editables = $editables;
@@ -35,15 +35,27 @@ var Editable = (function($, dceApi, Editor) {
       var $editing = self.$editables.filter('[contenteditable]');
       self.save();
     });
+    this.storeStateHash();
   };
 
+  // store hash of the state to detect if it changed
+  Editable.prototype.storeStateHash = function() {
+    // TODO a more robust hash
+    this.stateHash.push(this.$editables.text());
+  };
 
   Editable.prototype.addHelper = function(el) {
     this.$helper = $(el);
   };
 
-  // Save contents of element back
+  // Save contents of element back and then destroy self
   Editable.prototype.save = function() {
+    this.storeStateHash();
+    if (this.stateHash[this.stateHash.length - 1] == this.stateHash[0]) {
+      console.log('nothing changed')
+      this.destroy();
+      return;
+    }
     var $box = this.$el,
         data = $box.data(),
         meta = data.editmeta,
