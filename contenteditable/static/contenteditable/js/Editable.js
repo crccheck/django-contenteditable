@@ -33,9 +33,7 @@ var Editable = (function($, dceApi, Editor) {
     this.$editables.contenteditable();
     this.$el.on('editorDestroyed.' + NAME, function() {
       var $editing = self.$editables.filter('[contenteditable]');
-      if ($editing.length === 0) {
-        self.save();
-      }
+      self.save();
     });
   };
 
