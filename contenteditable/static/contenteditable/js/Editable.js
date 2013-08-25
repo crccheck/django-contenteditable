@@ -5,6 +5,9 @@
 var Editable = (function($, dceApi, Editor) {
   "use strict";
 
+  var NAME = 'editbox';
+
+
   var Editable = function(el) {
     this.el = el;
     this.$el = $(el);
@@ -28,12 +31,17 @@ var Editable = (function($, dceApi, Editor) {
   Editable.prototype.init = function() {
     var self = this;
     this.$editables.contenteditable();
-    this.$el.on('editorDestroyed', function() {
+    this.$el.on('editorDestroyed.' + NAME, function() {
       var $editing = self.$editables.filter('[contenteditable]');
       if ($editing.length === 0) {
         self.save();
       }
     });
+  };
+
+
+  Editable.prototype.addHelper = function(el) {
+    this.$helper = $(el);
   };
 
   // Save contents of element back
@@ -84,9 +92,12 @@ var Editable = (function($, dceApi, Editor) {
 
   // Turns design mode off
   Editable.prototype.destroy = function() {
+    if (this.$helper) {
+      this.$helper.text('Edit'); // XXX
+    }
     this.$el
       .removeClass('ui-editbox-active')
-      .off('.editbox');  // XXX
+      .off('.' + NAME);
     this.$editables.filter('[contenteditable]').contenteditable('destroy');
   };
 

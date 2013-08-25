@@ -37,9 +37,6 @@
         if (this.$el.is('h1, h2, h3, h4, h5')) {
           evt.preventDefault();
         }
-        // this.save.call(this, evt);
-        // // or
-        // evt.preventDefault();
         // document.execCommand('insertParagraph', false, null);
       break;
       case 27:  // ESC

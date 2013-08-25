@@ -46,11 +46,10 @@ $(function(){
           var edit = $el.data('_dceediting');
           if (edit) {
             edit.save();
-            edit.destroy();
             $el.removeData('_dceediting');
-            $helper.text('Edit');
           } else {
             edit = new Editable($el[0]);
+            edit.addHelper(this);
             $el.data('_dceediting', edit);
             $helper.text('Save');
           }
