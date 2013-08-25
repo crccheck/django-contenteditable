@@ -1,5 +1,5 @@
 // handles converting a DOM Node to/from a contenteditable.
-/*global document, toolbar */
+/*global document */
 
 
 var Editable = (function($, dceApi, Editor) {
@@ -28,7 +28,6 @@ var Editable = (function($, dceApi, Editor) {
   Editable.prototype.init = function() {
     var self = this;
     this.$editables.contenteditable();
-    // toolbar.attachTo(this.$el);
   };
 
   // Save contents of element back

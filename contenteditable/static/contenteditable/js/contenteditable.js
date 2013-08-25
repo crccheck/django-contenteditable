@@ -18,8 +18,8 @@ $(function(){
     }
   });
 
-  // var toolbar = new Toolbar();
-  // window.toolbar = toolbar;
+  var toolbar = new Toolbar();
+  window.toolbar = toolbar;
   var $helpers = $('<div/>').appendTo(document.body);
 
   // not an efficient selector but makes this easier to implement in the templates

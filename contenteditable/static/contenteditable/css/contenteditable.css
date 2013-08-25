@@ -12,6 +12,8 @@
   -o-transition-property: left, top, width;
   transition-property: left, top, width;
   background: #cccccc;
+  line-height: 1.5;
+  margin-top: -1.5em;
   position: absolute; }
 
 .editme {
