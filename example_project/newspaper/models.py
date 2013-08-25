@@ -12,3 +12,9 @@ class Article(models.Model):
 
     def get_absolute_url(self):
         return reverse('article_detail', kwargs=dict(pk=self.pk))
+
+try:
+    import reversion
+    reversion.register(Article)
+except ImportError:
+    pass

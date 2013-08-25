@@ -7,6 +7,14 @@ from django.views.generic.detail import SingleObjectMixin
 
 from . import settings
 
+try:
+    # Because the reversion api keeps changing, it's only guaranteed to work for
+    # the latest versions of Django and Reversion
+    import reversion
+    REVERSION_INSTALLED = True
+except ImportError:
+    REVERSION_INSTALLED = False
+
 
 class NoPermission(Exception):
     message = 'User does not have permission'
@@ -62,7 +70,13 @@ class ContentEditableView(View, SingleObjectMixin):
         for fieldname in editable_fields:
             if fieldname in data:
                 obj.__setattr__(fieldname, data.pop(fieldname))
-        obj.save()  # TODO only save if changed
+        if REVERSION_INSTALLED:
+            with reversion.create_revision():
+                obj.save()
+                reversion.set_user(request.user)
+                reversion.set_comment("Contenteditable")
+        else:
+            obj.save()  # TODO only save if changed
         return HttpResponse(
             json.dumps(dict(message='ok')),
             content_type='application/json')
