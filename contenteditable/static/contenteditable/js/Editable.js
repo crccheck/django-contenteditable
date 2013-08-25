@@ -36,6 +36,8 @@ var Editable = (function($, dceApi, Editor) {
       self.save();
     });
     this.storeStateHash();
+    // autofocus
+    this.$editables.eq(0).focus();
   };
 
   // store hash of the state to detect if it changed
