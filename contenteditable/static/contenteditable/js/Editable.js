@@ -28,6 +28,12 @@ var Editable = (function($, dceApi, Editor) {
   Editable.prototype.init = function() {
     var self = this;
     this.$editables.contenteditable();
+    this.$el.on('editorDestroyed', function() {
+      var $editing = self.$editables.filter('[contenteditable]');
+      if ($editing.length === 0) {
+        self.save();
+      }
+    });
   };
 
   // Save contents of element back
@@ -81,7 +87,7 @@ var Editable = (function($, dceApi, Editor) {
     this.$el
       .removeClass('ui-editbox-active')
       .off('.editbox');  // XXX
-    this.$editables.contenteditable('destroy');
+    this.$editables.filter('[contenteditable]').contenteditable('destroy');
   };
 
   return Editable;

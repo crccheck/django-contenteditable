@@ -26,9 +26,11 @@ var Toolbar = (function($) {
   };
 
   Toolbar.prototype.destroy = function() {
-    // this.$el.detach();
-    this.$el.remove();
-    this.$el = null;
+    if (this.$el && this.$el.length) {
+      // this.$el.detach();
+      this.$el.remove();
+      this.$el = null;
+    }
   };
 
   return Toolbar;

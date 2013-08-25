@@ -25,7 +25,7 @@
         self.keyHandler.call(self, e);
       })
       .on('focus', function(e) {
-        toolbar.attachTo(self.$el);
+        // toolbar.attachTo(self.$el);
       });
     this.storeState();
   };
@@ -62,7 +62,7 @@
     this.$el
       .removeAttr('contenteditable')
       .off('.' + NAME);
-    toolbar.destroy();
+    // toolbar.destroy();
     this.$el.trigger('editorDestroyed');
   };
 
