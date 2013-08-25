@@ -128,6 +128,7 @@ INSTALLED_APPS = [
 
     # support
     'chunks',
+    'reversion',
 ]
 
 # A sample logging configuration. The only tangible logging

@@ -6,6 +6,7 @@ build/*
 dist/
 example_project/*.sqlite
 .sass-cache
+local_settings.py
 
 # testing
 .tox

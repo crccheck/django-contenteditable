@@ -20,6 +20,7 @@ test:
 
 # reset an existing db
 resetdb:
+	$(DJ) sqlclear reversion | $(DJ) dbshell
 	$(DJ) sqlclear newspaper | $(DJ) dbshell
 	$(DJ) sqlclear chunks | $(DJ) dbshell
 	$(DJ) syncdb

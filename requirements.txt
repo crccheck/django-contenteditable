@@ -1,7 +1,9 @@
 Django>=1.5.1
 
-django-chunks==0.1
 dj-database-url==0.2.2
+django-chunks==0.1
+django-reversion==1.7.1
+
 
 # heroku
 psycopg2==2.5.1

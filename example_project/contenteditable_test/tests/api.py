@@ -1,3 +1,5 @@
+import random
+
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.http import Http404
@@ -71,7 +73,7 @@ class CRUDTest(LoggedInTestCase):
         Article.objects.get(title=new_title)
 
     def test_can_update_field(self):
-        new_title = "Poopity Poop Pooh"
+        new_title = u"Poopity Poop Pooh"
         request = self.factory.post(self.url,
            self.generate(title=new_title)
         )
@@ -112,3 +114,29 @@ class Settings(LoggedInTestCase):
         request.user = self.user
         with self.assertRaises(Http404):
             view(request)
+
+
+# TODO skipIf reversion is not installed
+class ReversionTest(LoggedInTestCase):
+    # WIP
+    def test_can_update_field(self):
+        from django.contrib.contenttypes.models import ContentType
+        from reversion.models import Version
+
+        new_title = u"Title {0}".format(random.randint(0, 99))
+        request = self.factory.post(self.url,
+           self.generate(title=new_title)
+        )
+        request.user = self.user
+        view = ContentEditableView.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        obj = Article.objects.get(pk=1)
+        self.assertEqual(obj.title, new_title)
+
+        article_type = ContentType.objects.get(model='article')
+        versions = Version.objects.filter(
+            content_type=article_type,
+            object_repr=new_title,
+        )
+        self.assertTrue(versions.get())
